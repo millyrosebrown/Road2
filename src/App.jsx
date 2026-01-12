@@ -1,82 +1,53 @@
 import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom'
-import { Home, Target, Dumbbell, TrendingUp, User, Menu } from 'lucide-react'
-import Dashboard from './pages/Dashboard'
+import { User, Target, Map, BookOpen, Info } from 'lucide-react'
+import Profile from './pages/Profile'
 import Goals from './pages/Goals'
-import Exercises from './pages/Exercises'
-import Progress from './pages/Progress'
+import Journey from './pages/Journey'
+import Diary from './pages/Diary'
+import Help from './pages/Help'
 import './App.css'
 
 function App() {
   return (
     <Router>
       <div className="app-container">
-        <Sidebar />
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/goals" element={<Goals />} />
-            <Route path="/exercises" element={<Exercises />} />
-            <Route path="/progress" element={<Progress />} />
-          </Routes>
-        </main>
+        <Routes>
+          <Route path="/" element={<Profile />} />
+          <Route path="/goals" element={<Goals />} />
+          <Route path="/journey" element={<Journey />} />
+          <Route path="/diary" element={<Diary />} />
+          <Route path="/help" element={<Help />} />
+        </Routes>
+        <BottomNav />
       </div>
     </Router>
   )
 }
 
-function Sidebar() {
+function BottomNav() {
+  const navItems = [
+    { to: '/', icon: User, label: 'Profile' },
+    { to: '/goals', icon: Target, label: 'Goals' },
+    { to: '/journey', icon: Map, label: 'Journey' },
+    { to: '/diary', icon: BookOpen, label: 'Diary' },
+    { to: '/help', icon: Info, label: 'Help' },
+  ]
+
   return (
-    <aside className="sidebar">
-      <div className="sidebar-header">
-        <div className="logo">
-          <div className="logo-icon">
-            <TrendingUp size={24} />
+    <nav className="bottom-nav">
+      {navItems.map(({ to, icon: Icon, label }) => (
+        <NavLink
+          key={to}
+          to={to}
+          className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+        >
+          <div className="nav-icon-wrapper">
+            <Icon size={20} />
           </div>
-          <span className="logo-text">Road2</span>
-        </div>
-      </div>
-      
-      <nav className="sidebar-nav">
-        <ul className="nav-list">
-          <li>
-            <NavLink to="/" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-              <Home className="nav-icon" size={20} />
-              <span className="nav-text">Dashboard</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/goals" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-              <Target className="nav-icon" size={20} />
-              <span className="nav-text">Goals</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/exercises" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-              <Dumbbell className="nav-icon" size={20} />
-              <span className="nav-text">Exercises</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/progress" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-              <TrendingUp className="nav-icon" size={20} />
-              <span className="nav-text">Progress</span>
-            </NavLink>
-          </li>
-        </ul>
-      </nav>
-      
-      <div className="sidebar-footer">
-        <div className="user-profile">
-          <div className="user-avatar">
-            <User size={20} />
-          </div>
-          <div className="user-info">
-            <span className="user-name">Client</span>
-            <span className="user-status">Active Plan</span>
-          </div>
-        </div>
-      </div>
-    </aside>
+          <span className="nav-label">{label}</span>
+        </NavLink>
+      ))}
+    </nav>
   )
 }
 
