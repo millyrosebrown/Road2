@@ -16,7 +16,8 @@ function App() {
         <div className="app-container">
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/" element={<Profile />} />
+            <Route path="/" element={<Journey />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/goals" element={<Goals />} />
             <Route path="/journey" element={<Journey />} />
             <Route path="/diary" element={<Diary />} />
@@ -34,10 +35,10 @@ function BottomNav() {
   if (window.location.pathname === '/login') return null
 
   const navItems = [
-    { to: '/', icon: User, label: 'Profile' },
+    { to: '/', icon: Map, label: 'Journey' },
     { to: '/goals', icon: Target, label: 'Goals' },
-    { to: '/journey', icon: Map, label: 'Journey' },
     { to: '/diary', icon: BookOpen, label: 'Diary' },
+    { to: '/profile', icon: User, label: 'Profile' },
     { to: '/help', icon: Info, label: 'Help' },
   ]
 
