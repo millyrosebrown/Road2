@@ -1,103 +1,104 @@
 import { useState, useEffect } from 'react'
-import { ArrowRight, MapPin, Navigation, Loader2 } from 'lucide-react'
+import { ArrowRight, Flag, Navigation, Loader2 } from 'lucide-react'
 import { useAuth } from '../lib/AuthContext'
 
 export default function Journey() {
     const { profile, updateProfile, loading: authLoading } = useAuth()
-    const [destination, setDestination] = useState('')
+    const [destinationInput, setDestinationInput] = useState('')
     const [saving, setSaving] = useState(false)
     const [showOnboarding, setShowOnboarding] = useState(false)
 
-    // Check if user has an ultimate goal defined
+    // Ensure we check the profile as soon as it's available
     useEffect(() => {
-        // Only show onboarding if we've finished loading and there's definitely no goal
-        if (!authLoading && profile && !profile.ultimateGoal) {
-            setShowOnboarding(true)
-        } else {
-            setShowOnboarding(false)
+        if (!authLoading && profile) {
+            // Show prompt if the ultimate goal is empty or null
+            if (!profile.ultimateGoal || profile.ultimateGoal.trim() === '') {
+                setShowOnboarding(true)
+            } else {
+                setShowOnboarding(false)
+            }
         }
     }, [profile, authLoading])
 
     const handleSetDestination = async (e) => {
         e.preventDefault()
-        if (!destination.trim()) return
+        if (!destinationInput.trim()) return
 
         setSaving(true)
         try {
-            await updateProfile({ ultimateGoal: destination })
+            await updateProfile({ ultimateGoal: destinationInput })
             setShowOnboarding(false)
         } catch (error) {
             console.error('Error saving destination:', error)
+            alert('Could not save your goal. Please try again.')
         } finally {
             setSaving(false)
         }
     }
 
-    // Show a clean loading state instead of placeholders
     if (authLoading) {
         return (
             <div className="journey-map-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ textAlign: 'center' }}>
-                    <Loader2 className="animate-spin" size={40} style={{ color: 'var(--navy-primary)', marginBottom: 'var(--spacing-4)' }} />
-                    <p style={{ color: 'var(--navy-primary)', fontWeight: 500 }}>Loading your journey...</p>
-                </div>
+                <Loader2 className="animate-spin" size={32} color="var(--navy-primary)" />
             </div>
         )
     }
 
     return (
         <div className="journey-map-container">
-            {/* Display persistent header if goal exists */}
-            {profile?.ultimateGoal && (
+            {/* 1. Persistent Goal at the Top */}
+            {profile?.ultimateGoal && !showOnboarding && (
                 <div className="destination-header">
                     <div className="destination-card">
                         <div className="destination-dot" />
                         <div className="destination-info">
-                            <span className="destination-label">Your Destination</span>
+                            <span className="destination-label">Your Road2 Goal</span>
                             <div className="destination-text">{profile.ultimateGoal}</div>
                         </div>
-                        <Navigation size={20} style={{ color: 'var(--navy-primary)' }} />
+                        <Flag size={20} style={{ color: 'var(--navy-primary)' }} />
                     </div>
                 </div>
             )}
 
-            {/* Prompt for destination */}
+            {/* 2. Onboarding Prompt (The Rehab "Destination") */}
             {showOnboarding && (
                 <div className="onboarding-overlay">
                     <div className="onboarding-content">
                         <div style={{ marginBottom: 'var(--spacing-6)' }}>
-                            <MapPin size={48} color="var(--teal-light)" />
+                            <Flag size={48} color="var(--teal-light)" />
                         </div>
                         <h1 className="onboarding-title">Welcome to your recovery journey</h1>
                         <p className="onboarding-subtitle">Where does your Road lead 2?</p>
 
-                        <form onSubmit={handleSetDestination} className="map-input-group" style={{ border: saving ? '2px solid var(--teal-primary)' : 'none' }}>
+                        <form onSubmit={handleSetDestination} className="map-input-group">
                             <input
                                 type="text"
                                 className="map-input"
-                                placeholder="Enter your ultimate goal..."
-                                value={destination}
-                                onChange={(e) => setDestination(e.target.value)}
+                                placeholder="e.g. Back on the football pitch"
+                                value={destinationInput}
+                                onChange={(e) => setDestinationInput(e.target.value)}
                                 disabled={saving}
                                 autoFocus
                             />
                             <button
                                 type="submit"
                                 className="map-input-btn"
-                                disabled={saving || !destination.trim()}
+                                disabled={saving || !destinationInput.trim()}
                             >
-                                {saving ? <Loader2 className="animate-spin" size={20} /> : <ArrowRight size={24} />}
+                                {saving ? <Loader2 className="animate-spin" size={24} /> : <ArrowRight size={24} />}
                             </button>
                         </form>
                     </div>
                 </div>
             )}
 
-            {/* Map background is handled by CSS journey-map-container */}
-            {!showOnboarding && !profile?.ultimateGoal && (
-                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--spacing-8)' }}>
-                    <div style={{ textAlign: 'center', color: 'var(--text-muted)', background: 'rgba(255,255,255,0.8)', padding: 'var(--spacing-4)', borderRadius: 'var(--radius-lg)' }}>
-                        <p>No destination set. Please check your profile or reload.</p>
+            {/* 3. Empty State (If goal set but no map data yet) */}
+            {profile?.ultimateGoal && !showOnboarding && (
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div className="glass-card" style={{ padding: 'var(--spacing-6)', textAlign: 'center', maxWidth: '80%' }}>
+                        <Navigation size={32} color="var(--navy-primary)" style={{ marginBottom: 'var(--spacing-3)' }} />
+                        <h3>You're on the right track</h3>
+                        <p>Keep logging your exercises to move closer to your goal.</p>
                     </div>
                 </div>
             )}
