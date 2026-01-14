@@ -93,7 +93,7 @@ export default function Login() {
                     }}>
                         <strong>⚠️ Connection Error:</strong> {connectionStatus.message}
                         <br />
-                        <span style={{ fontSize: '10px' }}>Make sure localhost is added to Appwrite Platforms.</span>
+                        <span style={{ fontSize: '10px' }}>Make sure this domain/hostname is added to your Appwrite Project Platforms.</span>
                     </div>
                 )}
                 {/* Tabs */}
