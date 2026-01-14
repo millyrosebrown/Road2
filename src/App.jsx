@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom'
 import { User, Target, Map, BookOpen, Info } from 'lucide-react'
+import { AuthProvider } from './lib/AuthContext'
+import Login from './pages/Login'
 import Profile from './pages/Profile'
 import Goals from './pages/Goals'
 import Journey from './pages/Journey'
@@ -9,22 +11,28 @@ import './App.css'
 
 function App() {
   return (
-    <Router>
-      <div className="app-container">
-        <Routes>
-          <Route path="/" element={<Profile />} />
-          <Route path="/goals" element={<Goals />} />
-          <Route path="/journey" element={<Journey />} />
-          <Route path="/diary" element={<Diary />} />
-          <Route path="/help" element={<Help />} />
-        </Routes>
-        <BottomNav />
-      </div>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <div className="app-container">
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Profile />} />
+            <Route path="/goals" element={<Goals />} />
+            <Route path="/journey" element={<Journey />} />
+            <Route path="/diary" element={<Diary />} />
+            <Route path="/help" element={<Help />} />
+          </Routes>
+          <BottomNav />
+        </div>
+      </Router>
+    </AuthProvider>
   )
 }
 
 function BottomNav() {
+  // Hide nav on login page
+  if (window.location.pathname === '/login') return null
+
   const navItems = [
     { to: '/', icon: User, label: 'Profile' },
     { to: '/goals', icon: Target, label: 'Goals' },
