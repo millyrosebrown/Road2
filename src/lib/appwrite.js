@@ -3,7 +3,7 @@ import { Client, Account, Databases, ID, Query } from 'appwrite';
 
 // Initialize Appwrite Client
 const client = new Client()
-    .setEndpoint('https://cloud.appwrite.io/v1')
+    .setEndpoint('https://syd.cloud.appwrite.io/v1')
     .setProject('69642b100039d0621438');
 
 // Initialize Services
