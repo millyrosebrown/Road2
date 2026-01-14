@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, NavLink } from 'react-router-dom'
-import { User, Target, Map, BookOpen, Info } from 'lucide-react'
+import { User, Target, Navigation, Calendar, Settings } from 'lucide-react'
 import { AuthProvider } from './lib/AuthContext'
 import Login from './pages/Login'
 import Profile from './pages/Profile'
@@ -35,19 +35,19 @@ function BottomNav() {
   if (window.location.pathname === '/login') return null
 
   const navItems = [
-    { to: '/profile', icon: User, label: 'Profile' },
-    { to: '/goals', icon: Target, label: 'Goals' },
-    { to: '/', icon: Map, label: 'Journey' },
-    { to: '/diary', icon: BookOpen, label: 'Diary' },
-    { to: '/help', icon: Info, label: 'Help' },
+    { id: 'profile', label: 'Profile', icon: User, path: '/profile' },
+    { id: 'goals', label: 'Goals', icon: Target, path: '/goals' },
+    { id: 'journey', label: 'Journey', icon: Navigation, path: '/' },
+    { id: 'diary', label: 'Fitness Diary', icon: Calendar, path: '/diary' },
+    { id: 'settings', label: 'Settings', icon: Settings, path: '/help' },
   ]
 
   return (
     <nav className="bottom-nav">
-      {navItems.map(({ to, icon: Icon, label }) => (
+      {navItems.map(({ path, icon: Icon, label, id }) => (
         <NavLink
-          key={to}
-          to={to}
+          key={id}
+          to={path}
           className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
         >
           <div className="nav-icon-wrapper">
