@@ -12,7 +12,7 @@ export default function Login() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
 
-    const { login, signup } = useAuth()
+    const { login, signup, connectionStatus } = useAuth()
     const navigate = useNavigate()
 
     const handleSubmit = async (e) => {
@@ -26,9 +26,22 @@ export default function Login() {
             } else {
                 await signup(email, password, name)
             }
-            navigate('/journey')
+            navigate('/') // Go to Journey (home)
         } catch (err) {
-            setError(err.message || 'Something went wrong')
+            console.error('Login/Signup UI Error:', err);
+            let message = 'Something went wrong';
+
+            if (err.message?.includes('fetch')) {
+                message = 'Network error: Cannot reach the server. Please check your internet or Appwrite settings.';
+            } else if (err.code === 409) {
+                message = 'An account with this email already exists.';
+            } else if (err.code === 401) {
+                message = 'Invalid email or password.';
+            } else {
+                message = err.message || message;
+            }
+
+            setError(message)
         } finally {
             setLoading(false)
         }
@@ -46,15 +59,12 @@ export default function Login() {
         }}>
             {/* Logo */}
             <div style={{ marginBottom: 'var(--spacing-8)', textAlign: 'center' }}>
-                <img
-                    src="/logo.png"
-                    alt="Road2 Rehabilitation"
-                    style={{
-                        height: 80,
-                        marginBottom: 'var(--spacing-4)',
-                        filter: 'brightness(0) invert(1)'
-                    }}
-                />
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'var(--spacing-4)' }}>
+                    <div className="nav-icon-wrapper" style={{ background: 'white', width: 64, height: 64 }}>
+                        <Navigation size={32} color="var(--navy-primary)" />
+                    </div>
+                </div>
+                <h1 style={{ color: 'white', fontSize: 'var(--font-size-2xl)', marginBottom: 'var(--spacing-1)' }}>Road2</h1>
                 <p style={{ color: 'rgba(255,255,255,0.8)' }}>
                     Your Recovery Journey Starts Here
                 </p>
@@ -69,6 +79,23 @@ export default function Login() {
                 padding: 'var(--spacing-8)',
                 boxShadow: '0 20px 60px rgba(0,0,0,0.2)'
             }}>
+                {/* Connection Warning */}
+                {connectionStatus.status === 'error' && (
+                    <div style={{
+                        padding: 'var(--spacing-3)',
+                        marginBottom: 'var(--spacing-4)',
+                        background: 'rgba(239,68,68,0.1)',
+                        borderRadius: 'var(--radius-lg)',
+                        color: 'var(--error)',
+                        fontSize: 'var(--font-size-xs)',
+                        textAlign: 'center',
+                        border: '1px solid rgba(239,68,68,0.2)'
+                    }}>
+                        <strong>⚠️ Connection Error:</strong> {connectionStatus.message}
+                        <br />
+                        <span style={{ fontSize: '10px' }}>Make sure localhost is added to Appwrite Platforms.</span>
+                    </div>
+                )}
                 {/* Tabs */}
                 <div style={{
                     display: 'flex',

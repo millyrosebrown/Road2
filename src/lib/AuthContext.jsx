@@ -8,11 +8,23 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [connectionStatus, setConnectionStatus] = useState({ status: 'checking', message: '' });
 
     // Check auth status on mount
     useEffect(() => {
         checkAuth();
+        verifyConnection();
     }, []);
+
+    const verifyConnection = async () => {
+        const status = await authService.checkConnection();
+        // Ignore 401 as it means we are connected but not logged in
+        if (status.status === 'error' && status.code === 401) {
+            setConnectionStatus({ status: 'connected', message: 'Connected to Appwrite' });
+        } else {
+            setConnectionStatus(status);
+        }
+    };
 
     const checkAuth = async () => {
         try {
@@ -23,29 +35,39 @@ export function AuthProvider({ children }) {
                 setProfile(userProfile);
             }
         } catch (error) {
-            console.error('Auth check error:', error);
+            console.error('Auth context check error:', error);
         } finally {
             setLoading(false);
         }
     };
 
     const login = async (email, password) => {
-        const session = await authService.login(email, password);
-        const currentUser = await authService.getCurrentUser();
-        setUser(currentUser);
-        const userProfile = await userService.getProfile(currentUser.$id);
-        setProfile(userProfile);
-        return session;
+        try {
+            const session = await authService.login(email, password);
+            const currentUser = await authService.getCurrentUser();
+            setUser(currentUser);
+            const userProfile = await userService.getProfile(currentUser.$id);
+            setProfile(userProfile);
+            return session;
+        } catch (error) {
+            console.error('Auth context login error:', error);
+            throw error;
+        }
     };
 
     const signup = async (email, password, name) => {
-        const newUser = await authService.createAccount(email, password, name);
-        const currentUser = await authService.getCurrentUser();
-        setUser(currentUser);
-        // Create initial profile
-        const newProfile = await userService.createProfile(currentUser.$id, { name });
-        setProfile(newProfile);
-        return newUser;
+        try {
+            const newUser = await authService.createAccount(email, password, name);
+            const currentUser = await authService.getCurrentUser();
+            setUser(currentUser);
+            // Create initial profile
+            const newProfile = await userService.createProfile(currentUser.$id, { name });
+            setProfile(newProfile);
+            return newUser;
+        } catch (error) {
+            console.error('Auth context signup error:', error);
+            throw error;
+        }
     };
 
     const logout = async () => {
@@ -66,12 +88,14 @@ export function AuthProvider({ children }) {
         user,
         profile,
         loading,
+        connectionStatus,
         isAuthenticated: !!user,
         login,
         signup,
         logout,
         updateProfile,
         refreshAuth: checkAuth,
+        verifyConnection,
     };
 
     return (

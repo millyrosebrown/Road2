@@ -44,7 +44,10 @@ export const authService = {
         try {
             return await account.get();
         } catch (error) {
-            console.error('Get user error:', error);
+            // Only log if it's not a 401 (unauthorized) which is common on mount
+            if (error.code !== 401) {
+                console.error('Get current user service error:', error);
+            }
             return null;
         }
     },
@@ -56,6 +59,22 @@ export const authService = {
             return !!user;
         } catch {
             return false;
+        }
+    },
+
+    // Diagnostic: Check connection to Appwrite
+    async checkConnection() {
+        try {
+            await account.get();
+            return { status: 'connected', message: 'Connected to Appwrite' };
+        } catch (error) {
+            console.error('Appwrite connection check failed:', error);
+            return {
+                status: 'error',
+                message: error.message || 'Failed to connect to Appwrite',
+                code: error.code,
+                type: error.type
+            };
         }
     }
 };
@@ -81,7 +100,12 @@ export const userService = {
                 }
             );
         } catch (error) {
-            console.error('Create profile error:', error);
+            console.error('Create profile service error:', {
+                message: error.message,
+                code: error.code,
+                type: error.type,
+                response: error.response
+            });
             throw error;
         }
     },
