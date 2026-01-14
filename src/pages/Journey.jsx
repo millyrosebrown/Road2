@@ -66,6 +66,7 @@ export default function Journey() {
                 currentWeek: 1
             })
 
+            // Reset setup state
             setShowWeeklySetup(false)
         } catch (error) {
             console.error('Error during journey setup:', error)
