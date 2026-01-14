@@ -354,3 +354,149 @@ p {
     overflow: hidden;
   }
 }
+
+/* ========================================
+   Journey Map Styles
+   ======================================== */
+.journey-map-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-image: url('/map-bg.png');
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+.destination-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: var(--spacing-4);
+  padding-top: calc(env(safe-area-inset-top) + var(--spacing-4));
+  z-index: 50;
+  background: linear-gradient(to bottom, rgba(30, 58, 95, 0.9) 0%, rgba(30, 58, 95, 0) 100%);
+}
+
+.destination-card {
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-4);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.destination-dot {
+  width: 12px;
+  height: 12px;
+  background: var(--error);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
+  flex-shrink: 0;
+}
+
+.destination-info {
+  flex: 1;
+}
+
+.destination-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  display: block;
+}
+
+.destination-text {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--navy-primary);
+}
+
+/* Onboarding Overlay */
+.onboarding-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 40, 71, 0.95);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-6);
+  color: white;
+}
+
+.onboarding-content {
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.onboarding-title {
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--spacing-2);
+  color: white;
+}
+
+.onboarding-subtitle {
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: var(--spacing-8);
+}
+
+.map-input-group {
+  position: relative;
+  background: white;
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-2);
+  display: flex;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.map-input {
+  flex: 1;
+  border: none;
+  padding: var(--spacing-4);
+  font-family: var(--font-family);
+  font-size: var(--font-size-lg);
+  color: var(--navy-primary);
+  outline: none;
+  background: transparent;
+}
+
+.map-input-btn {
+  background: var(--navy-primary);
+  color: white;
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.map-input-btn:hover {
+  background: var(--navy-light);
+  transform: scale(1.05);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
