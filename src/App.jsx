@@ -35,10 +35,10 @@ function BottomNav() {
   if (window.location.pathname === '/login') return null
 
   const navItems = [
-    { to: '/', icon: Map, label: 'Journey' },
-    { to: '/goals', icon: Target, label: 'Goals' },
-    { to: '/diary', icon: BookOpen, label: 'Diary' },
     { to: '/profile', icon: User, label: 'Profile' },
+    { to: '/goals', icon: Target, label: 'Goals' },
+    { to: '/', icon: Map, label: 'Journey' },
+    { to: '/diary', icon: BookOpen, label: 'Diary' },
     { to: '/help', icon: Info, label: 'Help' },
   ]
 
