@@ -10,7 +10,26 @@ export default function Journey() {
     const [saving, setSaving] = useState(false)
     const [showWeeklySetup, setShowWeeklySetup] = useState(false)
     const [weeklyGoals, setWeeklyGoals] = useState(['', '', ''])
+    const [localJourneyStarted, setLocalJourneyStarted] = useState(false)
+    const [hasExistingGoals, setHasExistingGoals] = useState(false)
     const navigate = useNavigate()
+
+    // 1. Check for existing goals to determine journey status
+    useEffect(() => {
+        const checkGoals = async () => {
+            if (user?.$id) {
+                try {
+                    const existing = await goalsService.getGoals(user.$id)
+                    setHasExistingGoals(existing.total > 0)
+                } catch (error) {
+                    console.error('Error fetching existing goals:', error)
+                }
+            }
+        }
+        if (isAuthenticated && !authLoading) {
+            checkGoals()
+        }
+    }, [user, isAuthenticated, authLoading])
 
     // Redirect to login if not authenticated
     useEffect(() => {
@@ -21,7 +40,8 @@ export default function Journey() {
 
     // Derived states
     const hasDestination = profile?.ultimateGoal && profile.ultimateGoal.trim() !== ''
-    const journeyStarted = profile?.journeyStarted || false
+    // Journey is started if we have existing goals OR if we just started it locally
+    const journeyStarted = hasExistingGoals || localJourneyStarted
     const showOnboarding = isAuthenticated && !authLoading && !hasDestination
 
     const handleSetDestination = async (e) => {
@@ -60,13 +80,15 @@ export default function Journey() {
                 })
             }
 
-            // 2. Mark journey as started in profile
+            // 2. Mark journey as started locally and in DB
+            // Note: We use valid fields only to avoid errors
             await updateProfile({
-                journeyStarted: true,
                 currentWeek: 1
             })
 
-            // Reset setup state
+            // Success!
+            setHasExistingGoals(true)
+            setLocalJourneyStarted(true)
             setShowWeeklySetup(false)
         } catch (error) {
             console.error('Error during journey setup:', error)
@@ -102,7 +124,7 @@ export default function Journey() {
 
             {/* 2. INITIAL ONBOARDING (SET DESTINATION) */}
             {showOnboarding && (
-                <div className="onboarding-overlay">
+                <div className="onboarding-overlay" style={{ zIndex: 2000 }}>
                     <div className="onboarding-content">
                         <div className="nav-icon-wrapper" style={{ margin: '0 auto 1.5rem', background: 'var(--gradient-teal)', width: 80, height: 80 }}>
                             <Navigation size={40} color="white" />
@@ -132,7 +154,7 @@ export default function Journey() {
             {/* 3. READY TO START STATE */}
             {hasDestination && !journeyStarted && !showWeeklySetup && (
                 <div className="journey-overlay-center">
-                    <div className="glass-card journey-start-card">
+                    <div className="glass-card journey-start-card" style={{ zIndex: 100 }}>
                         <h2 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', color: 'var(--navy-primary)' }}>Are you ready to start your Road 2:</h2>
                         <div className="goal-highlight">{profile.ultimateGoal}</div>
                         <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1.5rem', maxWidth: '280px', margin: '0 auto 1.5rem' }}>
@@ -147,7 +169,7 @@ export default function Journey() {
 
             {/* 4. WEEKLY GOALS SETUP OVERLAY */}
             {showWeeklySetup && (
-                <div className="onboarding-overlay">
+                <div className="onboarding-overlay" style={{ zIndex: 3000 }}>
                     <div className="onboarding-content setup-card">
                         <h2 className="setup-title">Weekly Focus</h2>
                         <p className="setup-subtitle">What 3 daily activities would you like to improve upon weekly?</p>
@@ -186,22 +208,23 @@ export default function Journey() {
 
             {/* 5. ACTIVE JOURNEY ROAD MAP */}
             {journeyStarted && !showWeeklySetup && (
-                <div className="journey-road-view">
+                <div className="journey-road-view" style={{ zIndex: 10 }}>
                     {/* Arbitrary winding road SVG */}
-                    <svg className="road-svg" viewBox="0 0 430 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg className="road-svg" viewBox="0 0 430 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
-                            d="M215 800C215 800 215 700 215 650C215 550 100 500 100 400C100 300 330 250 330 150C330 50 215 0 215 0"
+                            d="M215 900C215 900 215 800 215 750C215 650 100 600 100 500C100 400 330 350 330 250C330 150 215 100 215 50"
                             stroke="var(--navy-primary)"
                             strokeWidth="40"
                             strokeLinecap="round"
                             strokeLinejoin="round"
-                            style={{ opacity: 0.9 }}
+                            style={{ opacity: 0.95 }}
                         />
                         <path
-                            d="M215 800C215 800 215 700 215 650C215 550 100 500 100 400C100 300 330 250 330 150C330 50 215 0 215 0"
+                            d="M215 900C215 900 215 800 215 750C215 650 100 600 100 500C100 400 330 350 330 250C330 150 215 100 215 50"
                             stroke="white"
                             strokeWidth="2"
-                            strokeDasharray="10 10"
+                            strokeDasharray="10 12"
+                            style={{ opacity: 0.8 }}
                         />
                     </svg>
 
