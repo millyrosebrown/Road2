@@ -77,11 +77,12 @@ export function AuthProvider({ children }) {
     };
 
     const updateProfile = async (data) => {
-        if (user && profile) {
-            // Ensure required fields like 'name' are maintained if not provided in the update
+        if (user) {
+            // Ensure required fields like 'name' are maintained. 
+            // After schema recreation, profile.name might be missing, so fallback to account user.name
             const updateData = {
                 ...data,
-                name: data.name || profile.name,
+                name: data.name || profile?.name || user?.name || 'User',
             };
             const updated = await userService.updateProfile(user.$id, updateData);
             setProfile(updated);
