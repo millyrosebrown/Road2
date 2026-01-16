@@ -32,6 +32,11 @@ export default function WeekPlanner() {
         fetchProgress()
     }, [user, authLoading])
 
+    // Scroll to top when page loads
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
+
     // Calculate week dates based on journey start
     const getWeekDates = () => {
         // For now, calculate dates relative to today for Week 1

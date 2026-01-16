@@ -55,15 +55,17 @@ export default function Journey() {
         }
     }, [isAuthenticated, authLoading, navigate])
 
-    // 3. Scroll to bottom of road on load
+    // 3. Scroll to current/active week on load
     useEffect(() => {
         if (journeyStarted) {
-            const container = document.querySelector('.roadmap-scroll-container');
-            if (container) {
-                container.scrollTop = container.scrollHeight;
+            const currentWeek = profile?.currentWeek || 1
+            // Find the active week element and scroll it into view
+            const activeWeekElement = document.querySelector(`[data-week="${currentWeek}"]`)
+            if (activeWeekElement) {
+                activeWeekElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
             }
         }
-    }, [journeyStarted]);
+    }, [journeyStarted, profile?.currentWeek]);
 
     const handleSetDestination = async (e) => {
         e.preventDefault()
@@ -295,6 +297,7 @@ export default function Journey() {
                                     <div
                                         key={weekNum}
                                         className="week-node"
+                                        data-week={weekNum}
                                         style={{ left: `${pos.x}%`, top: `${pos.y}px` }}
                                     >
                                         <button
