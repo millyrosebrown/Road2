@@ -278,16 +278,15 @@ export default function Journey() {
                                 if (weekNum === 8) left = "50%";
 
                                 // Week positions - evenly spaced and centered on the curved road
-                                // Road: center(215) → left(100) → right(330) → left(100) → right(330) → center(215)
-                                // In percentages: 50% center, 23% left, 77% right
+                                // Adjusted visually: left curves ~35%, right curves ~65%, center 50%
                                 const positions = [
                                     { x: 50, y: 1450 }, // Week 1 - bottom center
-                                    { x: 23, y: 1260 }, // Week 2 - left curve
-                                    { x: 77, y: 1070 }, // Week 3 - right curve
-                                    { x: 23, y: 880 },  // Week 4 - left curve
-                                    { x: 77, y: 690 },  // Week 5 - right curve
-                                    { x: 23, y: 500 },  // Week 6 - left curve
-                                    { x: 77, y: 310 },  // Week 7 - right curve
+                                    { x: 35, y: 1260 }, // Week 2 - left curve
+                                    { x: 65, y: 1070 }, // Week 3 - right curve
+                                    { x: 35, y: 880 },  // Week 4 - left curve
+                                    { x: 65, y: 690 },  // Week 5 - right curve
+                                    { x: 35, y: 500 },  // Week 6 - left curve
+                                    { x: 65, y: 310 },  // Week 7 - right curve
                                     { x: 50, y: 120 }   // Week 8 - top center
                                 ];
 
