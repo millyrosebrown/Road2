@@ -12,13 +12,15 @@ export default function Journey() {
     const [weeklyGoals, setWeeklyGoals] = useState(['', '', ''])
     const [localJourneyStarted, setLocalJourneyStarted] = useState(false)
     const [hasExistingGoals, setHasExistingGoals] = useState(false)
+    const [journeyLoading, setJourneyLoading] = useState(true) // Prevents flash while checking
     const navigate = useNavigate()
 
     // Derived states
     const hasDestination = profile?.ultimateGoal && profile.ultimateGoal.trim() !== ''
     // Journey is started if we have existing goals OR if we just started it locally
     const journeyStarted = hasExistingGoals || localJourneyStarted
-    const showOnboarding = isAuthenticated && !authLoading && !hasDestination
+    // Only show onboarding after loading is complete and user has no destination
+    const showOnboarding = isAuthenticated && !authLoading && !journeyLoading && !hasDestination
 
     // 1. Check for existing goals to determine journey status
     useEffect(() => {
@@ -32,11 +34,17 @@ export default function Journey() {
                     }
                 } catch (error) {
                     console.error('Error fetching journey progress:', error)
+                } finally {
+                    setJourneyLoading(false)
                 }
+            } else {
+                setJourneyLoading(false)
             }
         }
         if (isAuthenticated && !authLoading) {
             checkJourney()
+        } else if (!authLoading) {
+            setJourneyLoading(false)
         }
     }, [user, isAuthenticated, authLoading])
 
@@ -114,7 +122,7 @@ export default function Journey() {
         }
     }
 
-    if (authLoading) {
+    if (authLoading || journeyLoading) {
         return (
             <div className="journey-map-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Loader2 className="animate-spin" size={40} color="var(--navy-primary)" />
