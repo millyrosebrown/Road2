@@ -77,8 +77,13 @@ export function AuthProvider({ children }) {
     };
 
     const updateProfile = async (data) => {
-        if (user) {
-            const updated = await userService.updateProfile(user.$id, data);
+        if (user && profile) {
+            // Ensure required fields like 'name' are maintained if not provided in the update
+            const updateData = {
+                ...data,
+                name: data.name || profile.name,
+            };
+            const updated = await userService.updateProfile(user.$id, updateData);
             setProfile(updated);
             return updated;
         }
