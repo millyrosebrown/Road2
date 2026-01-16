@@ -238,18 +238,17 @@ export default function Journey() {
                     </div>
 
                     <div className="roadmap-road-layer">
-                        {/* Winding Road SVG - adjusted to connect with banner */}
+                        {/* Winding Road SVG - wide navy road */}
                         <svg className="road-svg-full" viewBox="0 0 430 1600" preserveAspectRatio="none">
                             <path
-                                d="M340,0 C340,50 340,100 330,150 C300,250 100,300 100,400 C100,500 330,550 330,650 C330,750 100,800 100,900 C100,1000 330,1050 330,1150 C330,1250 215,1300 215,1400 C215,1450 215,1500 215,1550"
+                                d="M215,0 L215,1600"
                                 stroke="var(--navy-primary)"
-                                strokeWidth="50"
+                                strokeWidth="70"
                                 strokeLinecap="round"
-                                strokeLinejoin="round"
                                 fill="none"
                             />
                             <path
-                                d="M340,0 C340,50 340,100 330,150 C300,250 100,300 100,400 C100,500 330,550 330,650 C330,750 100,800 100,900 C100,1000 330,1050 330,1150 C330,1250 215,1300 215,1400 C215,1450 215,1500 215,1550"
+                                d="M215,0 L215,1600"
                                 stroke="rgba(255,255,255,0.4)"
                                 strokeWidth="2"
                                 strokeDasharray="15, 20"
@@ -277,17 +276,16 @@ export default function Journey() {
                                 if (weekNum === 7) left = "50%";
                                 if (weekNum === 8) left = "50%";
 
-                                // Week positions matching the road from banner (top-right) to bottom (center)
-                                // Road path: M340,0 → curves to left (100) → right (330) → etc. → ends at center (215),1550
+                                // Week positions - all centered on the road, evenly spaced
                                 const positions = [
-                                    { x: 50, y: 1510 }, // Week 1 (Bottom center)
-                                    { x: 50, y: 1350 }, // Week 2
-                                    { x: 77, y: 1100 }, // Week 3 (right side)
-                                    { x: 23, y: 900 },  // Week 4 (left side)
-                                    { x: 77, y: 700 },  // Week 5 (right side)
-                                    { x: 23, y: 500 },  // Week 6 (left side)
-                                    { x: 77, y: 300 },  // Week 7 (right side)
-                                    { x: 77, y: 80 }    // Week 8 (Top, connecting to banner road)
+                                    { x: 50, y: 1400 }, // Week 1 (Bottom)
+                                    { x: 50, y: 1220 }, // Week 2
+                                    { x: 50, y: 1040 }, // Week 3
+                                    { x: 50, y: 860 },  // Week 4
+                                    { x: 50, y: 680 },  // Week 5
+                                    { x: 50, y: 500 },  // Week 6
+                                    { x: 50, y: 320 },  // Week 7
+                                    { x: 50, y: 140 }   // Week 8 (Top)
                                 ];
 
                                 const pos = positions[weekNum - 1];
