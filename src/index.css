@@ -419,6 +419,44 @@ p {
   color: var(--navy-primary);
 }
 
+/* Journey Banner */
+.journey-banner-container {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: #f0ece4;
+  /* Match banner background color */
+}
+
+.journey-banner-image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.destination-mini {
+  background: rgba(30, 58, 95, 0.95);
+  padding: var(--spacing-3) var(--spacing-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.destination-mini-label {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.destination-mini-text {
+  font-size: 0.875rem;
+  color: white;
+  font-weight: 600;
+  text-align: center;
+}
+
 /* Onboarding Overlay */
 .onboarding-overlay {
   position: fixed;

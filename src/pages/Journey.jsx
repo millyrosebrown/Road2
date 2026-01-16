@@ -134,21 +134,7 @@ export default function Journey() {
 
     return (
         <div className="journey-map-container">
-            {/* 1. PERSISTENT DESTINATION HEADER */}
-            {hasDestination && (
-                <div className="destination-header">
-                    <div className="destination-card">
-                        <div className="destination-dot" />
-                        <div className="destination-info">
-                            <span className="destination-label">Your Road2 Destination</span>
-                            <div className="destination-text">{profile.ultimateGoal}</div>
-                        </div>
-                        <Flag size={20} style={{ color: 'var(--navy-primary)' }} />
-                    </div>
-                </div>
-            )}
-
-            {/* 2. INITIAL ONBOARDING (SET DESTINATION) */}
+            {/* 1. INITIAL ONBOARDING (SET DESTINATION) */}
             {showOnboarding && (
                 <div className="onboarding-overlay" style={{ zIndex: 2000 }}>
                     <div className="onboarding-content">
@@ -177,7 +163,7 @@ export default function Journey() {
                 </div>
             )}
 
-            {/* 3. READY TO START STATE */}
+            {/* 2. READY TO START STATE */}
             {hasDestination && !journeyStarted && !showWeeklySetup && (
                 <div className="journey-overlay-center">
                     <div className="glass-card journey-start-card" style={{ zIndex: 100 }}>
@@ -193,7 +179,7 @@ export default function Journey() {
                 </div>
             )}
 
-            {/* 4. WEEKLY GOALS SETUP OVERLAY */}
+            {/* 3. WEEKLY GOALS SETUP OVERLAY */}
             {showWeeklySetup && (
                 <div className="onboarding-overlay" style={{ zIndex: 3000 }}>
                     <div className="onboarding-content setup-card">
@@ -232,16 +218,30 @@ export default function Journey() {
                 </div>
             )}
 
-            {/* 5. ACTIVE JOURNEY ROAD MAP */}
+            {/* 4. ACTIVE JOURNEY ROAD MAP */}
             {journeyStarted && !showWeeklySetup && (
                 <div className="roadmap-scroll-container">
-                    <div className="roadmap-road-layer">
-                        <div className="road-top-fade" />
+                    {/* Banner Image */}
+                    <div className="journey-banner-container">
+                        <img
+                            src="/src/assets/road2-banner.png"
+                            alt="Road2 Rehabilitation"
+                            className="journey-banner-image"
+                        />
+                        {/* Destination text underneath banner */}
+                        {hasDestination && (
+                            <div className="destination-mini">
+                                <span className="destination-mini-label">Your Road2 Destination</span>
+                                <span className="destination-mini-text">"{profile.ultimateGoal}"</span>
+                            </div>
+                        )}
+                    </div>
 
-                        {/* Winding Road SVG */}
+                    <div className="roadmap-road-layer">
+                        {/* Winding Road SVG - adjusted to connect with banner */}
                         <svg className="road-svg-full" viewBox="0 0 430 1600" preserveAspectRatio="none">
                             <path
-                                d="M215,1550 C215,1550 215,1450 215,1400 C215,1300 100,1250 100,1150 C100,1050 330,1000 330,900 C330,800 100,750 100,650 C100,550 330,500 330,400 C330,300 215,250 215,150 L215,50"
+                                d="M340,0 C340,50 340,100 330,150 C300,250 100,300 100,400 C100,500 330,550 330,650 C330,750 100,800 100,900 C100,1000 330,1050 330,1150 C330,1250 215,1300 215,1400 C215,1450 215,1500 215,1550"
                                 stroke="var(--navy-primary)"
                                 strokeWidth="50"
                                 strokeLinecap="round"
@@ -249,7 +249,7 @@ export default function Journey() {
                                 fill="none"
                             />
                             <path
-                                d="M215,1550 C215,1550 215,1450 215,1400 C215,1300 100,1250 100,1150 C100,1050 330,1000 330,900 C330,800 100,750 100,650 C100,550 330,500 330,400 C330,300 215,250 215,150 L215,50"
+                                d="M340,0 C340,50 340,100 330,150 C300,250 100,300 100,400 C100,500 330,550 330,650 C330,750 100,800 100,900 C100,1000 330,1050 330,1150 C330,1250 215,1300 215,1400 C215,1450 215,1500 215,1550"
                                 stroke="rgba(255,255,255,0.4)"
                                 strokeWidth="2"
                                 strokeDasharray="15, 20"
@@ -277,16 +277,17 @@ export default function Journey() {
                                 if (weekNum === 7) left = "50%";
                                 if (weekNum === 8) left = "50%";
 
-                                // Simpler zigzag for predictability
+                                // Week positions matching the road from banner (top-right) to bottom (center)
+                                // Road path: M340,0 → curves to left (100) → right (330) → etc. → ends at center (215),1550
                                 const positions = [
-                                    { x: 50, y: 1510 }, // Week 1 (Bottom)
-                                    { x: 23, y: 1300 }, // Week 2
-                                    { x: 50, y: 1100 }, // Week 3
-                                    { x: 77, y: 900 },  // Week 4
-                                    { x: 23, y: 700 },  // Week 5
-                                    { x: 77, y: 500 },  // Week 6
-                                    { x: 50, y: 300 },  // Week 7
-                                    { x: 50, y: 100 }   // Week 8 (Top)
+                                    { x: 50, y: 1510 }, // Week 1 (Bottom center)
+                                    { x: 50, y: 1350 }, // Week 2
+                                    { x: 77, y: 1100 }, // Week 3 (right side)
+                                    { x: 23, y: 900 },  // Week 4 (left side)
+                                    { x: 77, y: 700 },  // Week 5 (right side)
+                                    { x: 23, y: 500 },  // Week 6 (left side)
+                                    { x: 77, y: 300 },  // Week 7 (right side)
+                                    { x: 77, y: 80 }    // Week 8 (Top, connecting to banner road)
                                 ];
 
                                 const pos = positions[weekNum - 1];
