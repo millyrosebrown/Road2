@@ -817,3 +817,179 @@ p {
 .animate-spin {
   animation: spin 1s linear infinite;
 }
+
+/* ============================================
+   WEEK PLANNER STYLES
+   ============================================ */
+
+.week-planner-container {
+  min-height: 100vh;
+  background: var(--bg-secondary);
+  padding-bottom: 120px;
+}
+
+.week-planner-header {
+  background: var(--gradient-navy);
+  color: white;
+  padding: calc(env(safe-area-inset-top) + var(--spacing-4)) var(--spacing-4) var(--spacing-6);
+  position: relative;
+}
+
+.back-btn {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + var(--spacing-4));
+  left: var(--spacing-4);
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: var(--radius-full);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.week-header-content {
+  text-align: center;
+  padding-top: var(--spacing-6);
+}
+
+.week-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: var(--spacing-3);
+}
+
+.week-number-label {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.week-subtitle {
+  font-size: 0.875rem;
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.week-goal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  color: var(--teal-light);
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: var(--spacing-2);
+}
+
+.week-date-range {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+/* Weekly Focus Banner */
+.weekly-focus-banner {
+  background: white;
+  margin: var(--spacing-4);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-4);
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid var(--teal-primary);
+}
+
+.weekly-focus-banner h4 {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--spacing-2);
+}
+
+.focus-goals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+}
+
+.focus-goals span {
+  background: var(--teal-light);
+  color: var(--navy-primary);
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Day Cards */
+.week-days-container {
+  padding: 0 var(--spacing-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.day-card {
+  background: white;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.day-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-3) var(--spacing-4);
+  background: var(--navy-primary);
+  color: white;
+}
+
+.day-name {
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+}
+
+.day-date {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.day-exercises {
+  padding: var(--spacing-4);
+  min-height: 80px;
+}
+
+.empty-exercises {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  height: 60px;
+  border: 2px dashed var(--border-light);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.empty-exercises:hover {
+  border-color: var(--teal-primary);
+  color: var(--teal-primary);
+  background: rgba(0, 171, 194, 0.05);
+}

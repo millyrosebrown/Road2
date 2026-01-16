@@ -7,6 +7,7 @@ import Goals from './pages/Goals'
 import Journey from './pages/Journey'
 import Diary from './pages/Diary'
 import Help from './pages/Help'
+import WeekPlanner from './pages/WeekPlanner'
 import './App.css'
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
             <Route path="/journey" element={<Journey />} />
             <Route path="/diary" element={<Diary />} />
             <Route path="/help" element={<Help />} />
+            <Route path="/week/:weekNumber" element={<WeekPlanner />} />
           </Routes>
           <BottomNav />
         </div>

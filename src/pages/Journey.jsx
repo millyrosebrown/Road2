@@ -299,7 +299,7 @@ export default function Journey() {
                                     >
                                         <button
                                             className={`week-btn ${isActive ? 'active' : ''} ${isLocked ? 'locked' : ''}`}
-                                            onClick={() => !isLocked && navigate('/diary')}
+                                            onClick={() => !isLocked && navigate(`/week/${weekNum}`)}
                                             disabled={isLocked}
                                         >
                                             <span>W{weekNum}</span>
