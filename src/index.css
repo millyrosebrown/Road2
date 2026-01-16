@@ -421,9 +421,11 @@ p {
 
 /* Journey Banner */
 .journey-banner-container {
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 50;
+  left: 0;
+  right: 0;
+  z-index: 100;
   background: #f0ece4;
   /* Match banner background color */
 }
@@ -714,9 +716,8 @@ p {
   position: relative;
   background: var(--bg-beige);
   scroll-behavior: smooth;
-  display: flex;
-  flex-direction: column-reverse;
-  /* Week 1 at bottom */
+  padding-top: 180px;
+  /* Space for fixed banner */
 }
 
 .roadmap-road-layer {
