@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { ArrowRight, Flag, Navigation, Search, Loader2, Play, CheckCircle2 } from 'lucide-react'
+import { ArrowRight, Flag, Navigation, Search, Loader2, Play, CheckCircle2, Lock } from 'lucide-react'
 import { useAuth } from '../lib/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { goalsService } from '../lib/services'
@@ -13,6 +13,7 @@ export default function Journey() {
     const [localJourneyStarted, setLocalJourneyStarted] = useState(false)
     const [hasExistingGoals, setHasExistingGoals] = useState(false)
     const navigate = useNavigate()
+    const scrollRef = useState(null)
 
     // 1. Check for existing goals to determine journey status
     useEffect(() => {
@@ -37,6 +38,16 @@ export default function Journey() {
             navigate('/login')
         }
     }, [isAuthenticated, authLoading, navigate])
+
+    // 3. Scroll to bottom of road on load
+    useEffect(() => {
+        if (journeyStarted) {
+            const container = document.querySelector('.roadmap-scroll-container');
+            if (container) {
+                container.scrollTop = container.scrollHeight;
+            }
+        }
+    }, [journeyStarted]);
 
     // Derived states
     const hasDestination = profile?.ultimateGoal && profile.ultimateGoal.trim() !== ''
@@ -208,35 +219,88 @@ export default function Journey() {
 
             {/* 5. ACTIVE JOURNEY ROAD MAP */}
             {journeyStarted && !showWeeklySetup && (
-                <div className="journey-road-view" style={{ zIndex: 10 }}>
-                    {/* Arbitrary winding road SVG */}
-                    <svg className="road-svg" viewBox="0 0 430 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M215 900C215 900 215 800 215 750C215 650 100 600 100 500C100 400 330 350 330 250C330 150 215 100 215 50"
-                            stroke="var(--navy-primary)"
-                            strokeWidth="40"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            style={{ opacity: 0.95 }}
-                        />
-                        <path
-                            d="M215 900C215 900 215 800 215 750C215 650 100 600 100 500C100 400 330 350 330 250C330 150 215 100 215 50"
-                            stroke="white"
-                            strokeWidth="2"
-                            strokeDasharray="10 12"
-                            style={{ opacity: 0.8 }}
-                        />
-                    </svg>
+                <div className="roadmap-scroll-container">
+                    <div className="roadmap-road-layer">
+                        <div className="road-top-fade" />
 
-                    {/* Week 1 Button */}
-                    <div className="week-marker" style={{ bottom: '150px', left: '215px', transform: 'translateX(-50%)' }}>
-                        <button className="week-btn active" onClick={() => navigate('/diary')}>
-                            <span>Week 1</span>
-                        </button>
-                    </div>
+                        {/* Winding Road SVG */}
+                        <svg className="road-svg-full" viewBox="0 0 430 1600" preserveAspectRatio="none">
+                            <path
+                                d="M215,1550 C215,1550 215,1450 215,1400 C215,1300 100,1250 100,1150 C100,1050 330,1000 330,900 C330,800 100,750 100,650 C100,550 330,500 330,400 C330,300 215,250 215,150 L215,50"
+                                stroke="var(--navy-primary)"
+                                strokeWidth="50"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                fill="none"
+                            />
+                            <path
+                                d="M215,1550 C215,1550 215,1450 215,1400 C215,1300 100,1250 100,1150 C100,1050 330,1000 330,900 C330,800 100,750 100,650 C100,550 330,500 330,400 C330,300 215,250 215,150 L215,50"
+                                stroke="rgba(255,255,255,0.4)"
+                                strokeWidth="2"
+                                strokeDasharray="15, 20"
+                                fill="none"
+                            />
+                        </svg>
 
-                    <div className="road-info-overlay">
-                        <div className="current-status-chip">WEEK 1: FOUNDATION</div>
+                        {/* Weekly Nodes */}
+                        <div className="road-nodes-layer">
+                            {[1, 2, 3, 4, 5, 6, 7, 8].map((weekNum) => {
+                                // Calculate position based on a zigzag pattern matching the path
+                                let left = "50%";
+                                let bottom = (weekNum - 1) * 190 + 100; // Evenly spaced
+
+                                if (weekNum === 2 || weekNum === 6) left = "23%";
+                                if (weekNum === 4 || weekNum === 8) left = "77%";
+                                if (weekNum === 1 || weekNum === 3 || weekNum === 5 || weekNum === 7) left = "50%";
+
+                                // Adjust for the specific path curve
+                                if (weekNum === 2) left = "25%";
+                                if (weekNum === 3) left = "50%"; // Midpoint
+                                if (weekNum === 4) left = "75%";
+                                if (weekNum === 5) left = "25%";
+                                if (weekNum === 6) left = "75%";
+                                if (weekNum === 7) left = "50%";
+                                if (weekNum === 8) left = "50%";
+
+                                // Simpler zigzag for predictability
+                                const positions = [
+                                    { x: 50, y: 1510 }, // Week 1 (Bottom)
+                                    { x: 23, y: 1300 }, // Week 2
+                                    { x: 50, y: 1100 }, // Week 3
+                                    { x: 77, y: 900 },  // Week 4
+                                    { x: 23, y: 700 },  // Week 5
+                                    { x: 77, y: 500 },  // Week 6
+                                    { x: 50, y: 300 },  // Week 7
+                                    { x: 50, y: 100 }   // Week 8 (Top)
+                                ];
+
+                                const pos = positions[weekNum - 1];
+                                const isLocked = weekNum > (profile?.currentWeek || 1);
+                                const isActive = weekNum === (profile?.currentWeek || 1);
+
+                                return (
+                                    <div
+                                        key={weekNum}
+                                        className="week-node"
+                                        style={{ left: `${pos.x}%`, top: `${pos.y}px` }}
+                                    >
+                                        <button
+                                            className={`week-btn ${isActive ? 'active' : ''} ${isLocked ? 'locked' : ''}`}
+                                            onClick={() => !isLocked && navigate('/diary')}
+                                            disabled={isLocked}
+                                        >
+                                            <span>W{weekNum}</span>
+                                            {isLocked && (
+                                                <div className="lock-overlay">
+                                                    <Lock size={12} />
+                                                </div>
+                                            )}
+                                        </button>
+                                        <span className="week-label">Week {weekNum}</span>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
             )}
