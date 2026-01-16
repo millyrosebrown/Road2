@@ -277,16 +277,18 @@ export default function Journey() {
                                 if (weekNum === 7) left = "50%";
                                 if (weekNum === 8) left = "50%";
 
-                                // Week positions - following the curved road path
+                                // Week positions - evenly spaced and centered on the curved road
+                                // Road: center(215) → left(100) → right(330) → left(100) → right(330) → center(215)
+                                // In percentages: 50% center, 23% left, 77% right
                                 const positions = [
-                                    { x: 50, y: 1500 }, // Week 1 (Bottom center)
-                                    { x: 25, y: 1300 }, // Week 2 (curve left)
-                                    { x: 75, y: 1050 }, // Week 3 (curve right)
-                                    { x: 25, y: 800 },  // Week 4 (curve left)
-                                    { x: 75, y: 550 },  // Week 5 (curve right)
-                                    { x: 50, y: 350 },  // Week 6 (center)
-                                    { x: 50, y: 200 },  // Week 7 (center)
-                                    { x: 50, y: 60 }    // Week 8 (Top center)
+                                    { x: 50, y: 1450 }, // Week 1 - bottom center
+                                    { x: 23, y: 1260 }, // Week 2 - left curve
+                                    { x: 77, y: 1070 }, // Week 3 - right curve
+                                    { x: 23, y: 880 },  // Week 4 - left curve
+                                    { x: 77, y: 690 },  // Week 5 - right curve
+                                    { x: 23, y: 500 },  // Week 6 - left curve
+                                    { x: 77, y: 310 },  // Week 7 - right curve
+                                    { x: 50, y: 120 }   // Week 8 - top center
                                 ];
 
                                 const pos = positions[weekNum - 1];
