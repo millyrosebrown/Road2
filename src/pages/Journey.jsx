@@ -17,18 +17,21 @@ export default function Journey() {
 
     // 1. Check for existing goals to determine journey status
     useEffect(() => {
-        const checkGoals = async () => {
+        const checkJourney = async () => {
             if (user?.$id) {
                 try {
-                    const existing = await goalsService.getGoals(user.$id)
-                    setHasExistingGoals(existing.total > 0)
+                    const progress = await journeyService.getProgress(user.$id)
+                    if (progress && progress.weeklyGoal1) {
+                        setHasExistingGoals(true)
+                        setLocalJourneyStarted(true)
+                    }
                 } catch (error) {
-                    console.error('Error fetching existing goals:', error)
+                    console.error('Error fetching journey progress:', error)
                 }
             }
         }
         if (isAuthenticated && !authLoading) {
-            checkGoals()
+            checkJourney()
         }
     }, [user, isAuthenticated, authLoading])
 
@@ -81,7 +84,16 @@ export default function Journey() {
 
         setSaving(true)
         try {
-            // 1. Save goals to the goals collection
+            // 1. Save goals to the journey document
+            await journeyService.saveProgress(user.$id, {
+                ultimateGoal: profile.ultimateGoal,
+                currentWeek: 1,
+                weeklyGoal1: weeklyGoals[0],
+                weeklyGoal2: weeklyGoals[1],
+                weeklyGoal3: weeklyGoals[2]
+            })
+
+            // 2. Also save to goals collection for legacy/daily tracking if needed
             for (const goalTitle of weeklyGoals) {
                 await goalsService.createGoal(user.$id, {
                     title: goalTitle,
@@ -91,13 +103,7 @@ export default function Journey() {
                 })
             }
 
-            // 2. Mark journey as started locally and in DB
-            // Note: We use valid fields only to avoid errors
-            await updateProfile({
-                currentWeek: 1
-            })
-
-            // Success!
+            // 3. Mark journey as started locally
             setHasExistingGoals(true)
             setLocalJourneyStarted(true)
             setShowWeeklySetup(false)

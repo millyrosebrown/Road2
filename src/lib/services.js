@@ -318,6 +318,9 @@ export const journeyService = {
                         ultimateGoal: data.ultimateGoal,
                         currentWeek: data.currentWeek,
                         completedWeeks: data.completedWeeks || [],
+                        weeklyGoal1: data.weeklyGoal1 || '',
+                        weeklyGoal2: data.weeklyGoal2 || '',
+                        weeklyGoal3: data.weeklyGoal3 || '',
                         updatedAt: new Date().toISOString(),
                     }
                 );
@@ -331,6 +334,9 @@ export const journeyService = {
                         ultimateGoal: data.ultimateGoal,
                         currentWeek: data.currentWeek || 1,
                         completedWeeks: data.completedWeeks || [],
+                        weeklyGoal1: data.weeklyGoal1 || '',
+                        weeklyGoal2: data.weeklyGoal2 || '',
+                        weeklyGoal3: data.weeklyGoal3 || '',
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString(),
                     }

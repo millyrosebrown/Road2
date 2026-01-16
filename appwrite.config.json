@@ -390,6 +390,36 @@
                     "default": null
                 },
                 {
+                    "key": "weeklyGoal1",
+                    "type": "string",
+                    "status": "available",
+                    "error": "",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": ""
+                },
+                {
+                    "key": "weeklyGoal2",
+                    "type": "string",
+                    "status": "available",
+                    "error": "",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": ""
+                },
+                {
+                    "key": "weeklyGoal3",
+                    "type": "string",
+                    "status": "available",
+                    "error": "",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": ""
+                },
+                {
                     "key": "createdAt",
                     "type": "datetime",
                     "status": "available",
