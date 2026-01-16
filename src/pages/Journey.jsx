@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { ArrowRight, Flag, Navigation, Search, Loader2, Play, CheckCircle2, Lock } from 'lucide-react'
 import { useAuth } from '../lib/AuthContext'
 import { useNavigate } from 'react-router-dom'
-import { goalsService } from '../lib/services'
+import { goalsService, journeyService } from '../lib/services'
 
 export default function Journey() {
     const { profile, updateProfile, loading: authLoading, user, isAuthenticated } = useAuth()
@@ -13,7 +13,12 @@ export default function Journey() {
     const [localJourneyStarted, setLocalJourneyStarted] = useState(false)
     const [hasExistingGoals, setHasExistingGoals] = useState(false)
     const navigate = useNavigate()
-    const scrollRef = useState(null)
+
+    // Derived states
+    const hasDestination = profile?.ultimateGoal && profile.ultimateGoal.trim() !== ''
+    // Journey is started if we have existing goals OR if we just started it locally
+    const journeyStarted = hasExistingGoals || localJourneyStarted
+    const showOnboarding = isAuthenticated && !authLoading && !hasDestination
 
     // 1. Check for existing goals to determine journey status
     useEffect(() => {
@@ -51,12 +56,6 @@ export default function Journey() {
             }
         }
     }, [journeyStarted]);
-
-    // Derived states
-    const hasDestination = profile?.ultimateGoal && profile.ultimateGoal.trim() !== ''
-    // Journey is started if we have existing goals OR if we just started it locally
-    const journeyStarted = hasExistingGoals || localJourneyStarted
-    const showOnboarding = isAuthenticated && !authLoading && !hasDestination
 
     const handleSetDestination = async (e) => {
         e.preventDefault()
