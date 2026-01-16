@@ -238,17 +238,18 @@ export default function Journey() {
                     </div>
 
                     <div className="roadmap-road-layer">
-                        {/* Winding Road SVG - wide navy road */}
+                        {/* Winding Road SVG - curvy because recovery is not linear */}
                         <svg className="road-svg-full" viewBox="0 0 430 1600" preserveAspectRatio="none">
                             <path
-                                d="M215,0 L215,1600"
+                                d="M215,1600 C215,1500 100,1400 100,1300 C100,1200 330,1100 330,1000 C330,900 100,800 100,700 C100,600 330,500 330,400 C330,300 215,200 215,100 L215,0"
                                 stroke="var(--navy-primary)"
                                 strokeWidth="70"
                                 strokeLinecap="round"
+                                strokeLinejoin="round"
                                 fill="none"
                             />
                             <path
-                                d="M215,0 L215,1600"
+                                d="M215,1600 C215,1500 100,1400 100,1300 C100,1200 330,1100 330,1000 C330,900 100,800 100,700 C100,600 330,500 330,400 C330,300 215,200 215,100 L215,0"
                                 stroke="rgba(255,255,255,0.4)"
                                 strokeWidth="2"
                                 strokeDasharray="15, 20"
@@ -276,16 +277,16 @@ export default function Journey() {
                                 if (weekNum === 7) left = "50%";
                                 if (weekNum === 8) left = "50%";
 
-                                // Week positions - all centered on the road, evenly spaced
+                                // Week positions - following the curved road path
                                 const positions = [
-                                    { x: 50, y: 1400 }, // Week 1 (Bottom)
-                                    { x: 50, y: 1220 }, // Week 2
-                                    { x: 50, y: 1040 }, // Week 3
-                                    { x: 50, y: 860 },  // Week 4
-                                    { x: 50, y: 680 },  // Week 5
-                                    { x: 50, y: 500 },  // Week 6
-                                    { x: 50, y: 320 },  // Week 7
-                                    { x: 50, y: 140 }   // Week 8 (Top)
+                                    { x: 50, y: 1500 }, // Week 1 (Bottom center)
+                                    { x: 25, y: 1300 }, // Week 2 (curve left)
+                                    { x: 75, y: 1050 }, // Week 3 (curve right)
+                                    { x: 25, y: 800 },  // Week 4 (curve left)
+                                    { x: 75, y: 550 },  // Week 5 (curve right)
+                                    { x: 50, y: 350 },  // Week 6 (center)
+                                    { x: 50, y: 200 },  // Week 7 (center)
+                                    { x: 50, y: 60 }    // Week 8 (Top center)
                                 ];
 
                                 const pos = positions[weekNum - 1];
