@@ -224,7 +224,7 @@ export default function Journey() {
                     {/* Banner Image */}
                     <div className="journey-banner-container">
                         <img
-                            src="/src/assets/road2-banner.png"
+                            src="/road2-banner.png"
                             alt="Road2 Rehabilitation"
                             className="journey-banner-image"
                         />
