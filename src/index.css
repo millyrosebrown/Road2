@@ -1377,3 +1377,16 @@ p {
   font-size: 0.85rem;
   opacity: 0.9;
 }
+
+/* Set Indicator in Modal */
+.modal-set-indicator {
+  background: var(--navy-primary);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: var(--spacing-1) var(--spacing-3);
+  border-radius: var(--radius-full);
+  display: inline-block;
+  margin-bottom: var(--spacing-2);
+  letter-spacing: 0.05em;
+}

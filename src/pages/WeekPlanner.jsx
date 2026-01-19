@@ -342,41 +342,48 @@ export default function WeekPlanner() {
             </div>
 
             {/* Rating Modal */}
-            {ratingModal && (
-                <div className="rating-modal-overlay">
-                    <div className="rating-modal">
-                        <h3>How did this set feel?</h3>
-                        <div className="rating-faces">
-                            {RATING_FACES.map(face => (
+            {ratingModal && (() => {
+                const modalExercise = (exercises[ratingModal.dayKey] || []).find(e => e.id === ratingModal.exerciseId)
+                const setNum = ratingModal.setIndex + 1
+                const totalSets = modalExercise?.sets || 0
+
+                return (
+                    <div className="rating-modal-overlay">
+                        <div className="rating-modal">
+                            <div className="modal-set-indicator">Set {setNum} of {totalSets}</div>
+                            <h3>How did this set feel?</h3>
+                            <div className="rating-faces">
+                                {RATING_FACES.map(face => (
+                                    <button
+                                        key={face.value}
+                                        className={`rating-face ${selectedRating === face.value ? 'selected' : ''}`}
+                                        onClick={() => setSelectedRating(face.value)}
+                                    >
+                                        <span className="face-emoji">{face.emoji}</span>
+                                        <span className="face-label">{face.label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                            <textarea
+                                placeholder="Add a comment (optional)"
+                                value={ratingComment}
+                                onChange={(e) => setRatingComment(e.target.value)}
+                                className="rating-comment"
+                            />
+                            <div className="modal-actions">
+                                <button className="btn-cancel" onClick={() => setRatingModal(null)}>Cancel</button>
                                 <button
-                                    key={face.value}
-                                    className={`rating-face ${selectedRating === face.value ? 'selected' : ''}`}
-                                    onClick={() => setSelectedRating(face.value)}
+                                    className="btn-confirm"
+                                    onClick={handleSubmitRating}
+                                    disabled={!selectedRating}
                                 >
-                                    <span className="face-emoji">{face.emoji}</span>
-                                    <span className="face-label">{face.label}</span>
+                                    Done
                                 </button>
-                            ))}
-                        </div>
-                        <textarea
-                            placeholder="Add a comment (optional)"
-                            value={ratingComment}
-                            onChange={(e) => setRatingComment(e.target.value)}
-                            className="rating-comment"
-                        />
-                        <div className="modal-actions">
-                            <button className="btn-cancel" onClick={() => setRatingModal(null)}>Cancel</button>
-                            <button
-                                className="btn-confirm"
-                                onClick={handleSubmitRating}
-                                disabled={!selectedRating}
-                            >
-                                Done
-                            </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )
+            })()}
         </div>
     )
 }
