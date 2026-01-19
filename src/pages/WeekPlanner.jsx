@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Flag, Calendar, Plus, Loader2, Check, X } from 'lucide-react'
+import { ArrowLeft, Flag, Calendar, Plus, Loader2, Check, X, Trophy, Star } from 'lucide-react'
 import { useAuth } from '../lib/AuthContext'
-import { journeyService } from '../lib/services'
+import { journeyService, userService } from '../lib/services'
 
 // Rating faces for set completion
 const RATING_FACES = [
@@ -38,6 +38,12 @@ export default function WeekPlanner() {
     const [ratingModal, setRatingModal] = useState(null) // { dayKey, exerciseId, setIndex }
     const [selectedRating, setSelectedRating] = useState(null)
     const [ratingComment, setRatingComment] = useState('')
+
+    // Week completion flow state
+    const [showCongratsModal, setShowCongratsModal] = useState(false)
+    const [showGoalsRating, setShowGoalsRating] = useState(false)
+    const [goalRatings, setGoalRatings] = useState([null, null, null]) // 0-10 for each goal
+    const [weekCompleted, setWeekCompleted] = useState(false)
 
     const weekNum = parseInt(weekNumber, 10) || 1
 
@@ -142,6 +148,7 @@ export default function WeekPlanner() {
         const exercise = dayExercises.find(e => e.id === exerciseId)
         const totalSets = exercise?.sets || 0
         const nextSetIndex = setIndex + 1
+        const isLastSet = nextSetIndex >= totalSets
 
         setExercises(prev => {
             const updatedDayExercises = [...(prev[dayKey] || [])]
@@ -154,6 +161,19 @@ export default function WeekPlanner() {
                         ...updatedDayExercises[exerciseIndex].completedSets,
                         { rating: selectedRating, comment: ratingComment }
                     ]
+                }
+            }
+
+            // Check if this completes Sunday's exercise
+            const sundayKey = weekDays[6]?.dateKey
+            if (isLastSet && dayKey === sundayKey) {
+                // Check if all exercises for Sunday are complete
+                const sundayExercises = updatedDayExercises
+                const allComplete = sundayExercises.length > 0 &&
+                    sundayExercises.every(ex => ex.completedSets.length >= ex.sets)
+
+                if (allComplete && !weekCompleted) {
+                    setTimeout(() => setShowCongratsModal(true), 500)
                 }
             }
 
@@ -170,6 +190,22 @@ export default function WeekPlanner() {
             }, 300)
         } else {
             setRatingModal(null)
+        }
+    }
+
+    // Handle weekly goals rating submission
+    const handleGoalsSubmit = async () => {
+        if (goalRatings.some(r => r === null)) return
+
+        try {
+            // Update currentWeek to unlock next week
+            await userService.updateProfile(user.$id, {
+                currentWeek: weekNum + 1
+            })
+            setWeekCompleted(true)
+            setShowGoalsRating(false)
+        } catch (error) {
+            console.error('Error unlocking next week:', error)
         }
     }
 
@@ -384,6 +420,94 @@ export default function WeekPlanner() {
                     </div>
                 )
             })()}
+
+            {/* Congratulations Modal */}
+            {showCongratsModal && (
+                <div className="rating-modal-overlay">
+                    <div className="congrats-modal">
+                        <div className="congrats-icon">
+                            <Trophy size={48} />
+                        </div>
+                        <h2>Week {weekNum} Complete!</h2>
+                        <p className="congrats-quote">
+                            "Consistency is key. You've taken another step on your Road 2 <strong>{ultimateGoal}</strong>"
+                        </p>
+                        <button
+                            className="btn-next"
+                            onClick={() => {
+                                setShowCongratsModal(false)
+                                setShowGoalsRating(true)
+                            }}
+                        >
+                            Next →
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Weekly Goals Rating Modal */}
+            {showGoalsRating && (
+                <div className="rating-modal-overlay">
+                    <div className="goals-rating-modal">
+                        <h2>Let's Track Your Progress</h2>
+                        <p className="goals-subtitle">Rate how you felt doing these activities this week</p>
+                        <p className="goals-scale-hint">0 = Unable to perform → 10 = Prior level (no issue)</p>
+
+                        <div className="goals-list">
+                            {[journeyProgress?.weeklyGoal1, journeyProgress?.weeklyGoal2, journeyProgress?.weeklyGoal3].map((goal, idx) => (
+                                <div key={idx} className="goal-rating-item">
+                                    <div className="goal-rating-header">
+                                        <span className="goal-number">{idx + 1}</span>
+                                        <span className="goal-text">{goal}</span>
+                                    </div>
+                                    <div className="rating-scale">
+                                        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
+                                            <button
+                                                key={num}
+                                                className={`scale-btn ${goalRatings[idx] === num ? 'selected' : ''}`}
+                                                onClick={() => {
+                                                    const newRatings = [...goalRatings]
+                                                    newRatings[idx] = num
+                                                    setGoalRatings(newRatings)
+                                                }}
+                                            >
+                                                {num}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <button
+                            className="btn-unlock"
+                            onClick={handleGoalsSubmit}
+                            disabled={goalRatings.some(r => r === null)}
+                        >
+                            <Star size={20} /> Unlock Week {weekNum + 1}
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Week Unlocked Success */}
+            {weekCompleted && (
+                <div className="rating-modal-overlay">
+                    <div className="congrats-modal">
+                        <div className="congrats-icon success">
+                            <Check size={48} />
+                        </div>
+                        <h2>Week {weekNum + 1} Unlocked!</h2>
+                        <p className="congrats-quote">Keep up the great work on your journey!</p>
+                        <button
+                            className="btn-next"
+                            onClick={() => navigate('/')}
+                        >
+                            Back to Journey
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
