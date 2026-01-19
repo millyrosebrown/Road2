@@ -1279,3 +1279,101 @@ p {
 }
 
 .modal-actions .btn-confirm { flex: 2; font-weight: 600; }
+
+/* Start Exercise Button */
+.start-exercise-btn {
+  width: 100%;
+  padding: var(--spacing-3) var(--spacing-4);
+  background: var(--navy-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+}
+
+.start-exercise-btn:hover {
+  background: var(--navy-dark);
+  transform: scale(1.02);
+}
+
+/* Exercise Progress (mid-exercise) */
+.exercise-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.progress-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--teal-primary);
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.continue-btn {
+  padding: var(--spacing-2) var(--spacing-3);
+  background: var(--teal-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.continue-btn:hover {
+  background: var(--teal-dark);
+}
+
+/* Complete Banner */
+.exercise-complete-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: var(--radius-lg);
+  color: white;
+}
+
+.complete-check-icon {
+  flex-shrink: 0;
+}
+
+.complete-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.complete-label {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.complete-rating {
+  font-size: 0.85rem;
+  opacity: 0.9;
+}

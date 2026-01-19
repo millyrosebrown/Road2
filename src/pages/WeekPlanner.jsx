@@ -135,28 +135,42 @@ export default function WeekPlanner() {
     const handleSubmitRating = () => {
         if (!selectedRating || !ratingModal) return
 
-        const { dayKey, exerciseId } = ratingModal
+        const { dayKey, exerciseId, setIndex } = ratingModal
+
+        // Get the exercise to check if there are more sets
+        const dayExercises = exercises[dayKey] || []
+        const exercise = dayExercises.find(e => e.id === exerciseId)
+        const totalSets = exercise?.sets || 0
+        const nextSetIndex = setIndex + 1
 
         setExercises(prev => {
-            const dayExercises = [...(prev[dayKey] || [])]
-            const exerciseIndex = dayExercises.findIndex(e => e.id === exerciseId)
+            const updatedDayExercises = [...(prev[dayKey] || [])]
+            const exerciseIndex = updatedDayExercises.findIndex(e => e.id === exerciseId)
 
             if (exerciseIndex >= 0) {
-                dayExercises[exerciseIndex] = {
-                    ...dayExercises[exerciseIndex],
+                updatedDayExercises[exerciseIndex] = {
+                    ...updatedDayExercises[exerciseIndex],
                     completedSets: [
-                        ...dayExercises[exerciseIndex].completedSets,
+                        ...updatedDayExercises[exerciseIndex].completedSets,
                         { rating: selectedRating, comment: ratingComment }
                     ]
                 }
             }
 
-            return { ...prev, [dayKey]: dayExercises }
+            return { ...prev, [dayKey]: updatedDayExercises }
         })
 
-        setRatingModal(null)
         setSelectedRating(null)
         setRatingComment('')
+
+        // Auto-continue to next set if not complete
+        if (nextSetIndex < totalSets) {
+            setTimeout(() => {
+                setRatingModal({ dayKey, exerciseId, setIndex: nextSetIndex })
+            }, 300)
+        } else {
+            setRatingModal(null)
+        }
     }
 
     // Calculate average rating for completed exercise
@@ -234,32 +248,39 @@ export default function WeekPlanner() {
                                             </div>
 
                                             {isComplete ? (
-                                                <div className="exercise-complete">
-                                                    <span className="complete-face">{getFaceFromRating(avgRating)}</span>
-                                                    <span className="complete-score">{avgRating.toFixed(1)}/5</span>
-                                                    <Check size={16} className="complete-check" />
+                                                <div className="exercise-complete-banner">
+                                                    <Check size={24} className="complete-check-icon" />
+                                                    <div className="complete-text">
+                                                        <span className="complete-label">Complete!</span>
+                                                        <span className="complete-rating">
+                                                            {getFaceFromRating(avgRating)} {avgRating.toFixed(1)}/5
+                                                        </span>
+                                                    </div>
                                                 </div>
+                                            ) : exercise.completedSets.length === 0 ? (
+                                                <button
+                                                    className="start-exercise-btn"
+                                                    onClick={() => handleSetClick(day.dateKey, exercise.id, 0)}
+                                                >
+                                                    ▶ Start Exercise
+                                                </button>
                                             ) : (
-                                                <div className="exercise-sets">
-                                                    {Array.from({ length: exercise.sets }, (_, i) => {
-                                                        const isCompleted = i < exercise.completedSets.length
-                                                        const isNext = i === exercise.completedSets.length
-
-                                                        return (
-                                                            <button
-                                                                key={i}
-                                                                className={`set-btn ${isCompleted ? 'completed' : ''} ${isNext ? 'next' : ''}`}
-                                                                onClick={() => handleSetClick(day.dateKey, exercise.id, i)}
-                                                                disabled={!isNext}
-                                                            >
-                                                                {isCompleted ? (
-                                                                    <span>{exercise.completedSets[i].rating}</span>
-                                                                ) : (
-                                                                    <span>{i + 1}</span>
-                                                                )}
-                                                            </button>
-                                                        )
-                                                    })}
+                                                <div className="exercise-progress">
+                                                    <div className="progress-bar">
+                                                        <div
+                                                            className="progress-fill"
+                                                            style={{ width: `${(exercise.completedSets.length / exercise.sets) * 100}%` }}
+                                                        />
+                                                    </div>
+                                                    <span className="progress-text">
+                                                        Set {exercise.completedSets.length}/{exercise.sets}
+                                                    </span>
+                                                    <button
+                                                        className="continue-btn"
+                                                        onClick={() => handleSetClick(day.dateKey, exercise.id, exercise.completedSets.length)}
+                                                    >
+                                                        Continue →
+                                                    </button>
                                                 </div>
                                             )}
                                         </div>
