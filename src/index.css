@@ -1573,3 +1573,40 @@ p {
 .btn-unlock:not(:disabled):hover {
   transform: scale(1.02);
 }
+
+/* Week Button Complete State */
+.week-btn.complete {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.3) 100%);
+  border: 2px solid rgba(16, 185, 129, 0.5);
+}
+
+.complete-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(16, 185, 129, 0.5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+/* Newly Unlocked Animation */
+.week-node.newly-unlocked .week-btn {
+  animation: unlock-pulse 0.6s ease-out 3;
+}
+
+@keyframes unlock-pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.15); }
+}
+
+/* Lock removal animation */
+.week-node.newly-unlocked .lock-overlay {
+  animation: lock-fade 0.5s ease-out forwards;
+}
+
+@keyframes lock-fade {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0.5) rotate(15deg); }
+}

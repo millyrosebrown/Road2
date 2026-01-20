@@ -267,10 +267,27 @@ export default function WeekPlanner() {
         if (goalRatings.some(r => r === null)) return
 
         try {
+            // Count days with at least one completed exercise
+            let daysWithExercises = 0
+            weekDays.forEach(day => {
+                const dayExercises = exercises[day.dateKey] || []
+                const hasCompletedExercise = dayExercises.some(ex => ex.completedSets.length >= ex.sets)
+                if (hasCompletedExercise) daysWithExercises++
+            })
+
+            // Save week completion data to journey
+            await journeyService.saveProgress(user.$id, {
+                ...journeyProgress,
+                [`week${weekNum}Completed`]: true,
+                [`week${weekNum}DaysExercised`]: daysWithExercises,
+                [`week${weekNum}GoalRatings`]: JSON.stringify(goalRatings)
+            })
+
             // Update currentWeek to unlock next week
             await userService.updateProfile(user.$id, {
                 currentWeek: weekNum + 1
             })
+
             setWeekCompleted(true)
             setShowGoalsRating(false)
         } catch (error) {

@@ -1,8 +1,18 @@
 import { useState, useEffect } from 'react'
-import { ArrowRight, Flag, Navigation, Search, Loader2, Play, CheckCircle2, Lock } from 'lucide-react'
+import { ArrowRight, Flag, Navigation, Search, Loader2, Play, CheckCircle2, Lock, Check } from 'lucide-react'
 import { useAuth } from '../lib/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { goalsService, journeyService } from '../lib/services'
+
+// Get ring color based on days with exercises
+const getRingColor = (daysExercised) => {
+    if (daysExercised >= 7) return '#16A34A' // Dark green
+    if (daysExercised === 6) return '#22C55E' // Light green
+    if (daysExercised === 5) return '#84CC16' // Yellow-green
+    if (daysExercised === 4) return '#EAB308' // Yellow
+    if (daysExercised === 3) return '#F97316' // Orange
+    return '#EF4444' // Red (0-2 days)
+}
 
 export default function Journey() {
     const { profile, updateProfile, loading: authLoading, user, isAuthenticated } = useAuth()
@@ -12,7 +22,9 @@ export default function Journey() {
     const [weeklyGoals, setWeeklyGoals] = useState(['', '', ''])
     const [localJourneyStarted, setLocalJourneyStarted] = useState(false)
     const [hasExistingGoals, setHasExistingGoals] = useState(false)
-    const [journeyLoading, setJourneyLoading] = useState(true) // Prevents flash while checking
+    const [journeyLoading, setJourneyLoading] = useState(true)
+    const [journeyProgress, setJourneyProgress] = useState(null) // For week completion data
+    const [newlyUnlocked, setNewlyUnlocked] = useState(null) // Track which week was just unlocked
     const navigate = useNavigate()
 
     // Derived states
@@ -28,9 +40,17 @@ export default function Journey() {
             if (user?.$id) {
                 try {
                     const progress = await journeyService.getProgress(user.$id)
+                    setJourneyProgress(progress)
                     if (progress && progress.weeklyGoal1) {
                         setHasExistingGoals(true)
                         setLocalJourneyStarted(true)
+                    }
+                    // Check for newly unlocked week
+                    const currentWeek = profile?.currentWeek || 1
+                    if (currentWeek > 1 && progress?.[`week${currentWeek - 1}Completed`]) {
+                        setNewlyUnlocked(currentWeek)
+                        // Clear animation after a few seconds
+                        setTimeout(() => setNewlyUnlocked(null), 3000)
                     }
                 } catch (error) {
                     console.error('Error fetching journey progress:', error)
@@ -46,7 +66,7 @@ export default function Journey() {
         } else if (!authLoading) {
             setJourneyLoading(false)
         }
-    }, [user, isAuthenticated, authLoading])
+    }, [user, isAuthenticated, authLoading, profile?.currentWeek])
 
     // Redirect to login if not authenticated
     useEffect(() => {
@@ -293,21 +313,31 @@ export default function Journey() {
                                 const pos = positions[weekNum - 1];
                                 const isLocked = weekNum > (profile?.currentWeek || 1);
                                 const isActive = weekNum === (profile?.currentWeek || 1);
+                                const isComplete = journeyProgress?.[`week${weekNum}Completed`] === true;
+                                const daysExercised = journeyProgress?.[`week${weekNum}DaysExercised`] || 0;
+                                const ringColor = isComplete ? getRingColor(daysExercised) : null;
+                                const isNewlyUnlocked = newlyUnlocked === weekNum;
 
                                 return (
                                     <div
                                         key={weekNum}
-                                        className="week-node"
+                                        className={`week-node ${isNewlyUnlocked ? 'newly-unlocked' : ''}`}
                                         data-week={weekNum}
                                         style={{ left: `${pos.x}%`, top: `${pos.y}px` }}
                                     >
                                         <button
-                                            className={`week-btn ${isActive ? 'active' : ''} ${isLocked ? 'locked' : ''}`}
+                                            className={`week-btn ${isActive ? 'active' : ''} ${isLocked ? 'locked' : ''} ${isComplete ? 'complete' : ''}`}
                                             onClick={() => !isLocked && navigate(`/week/${weekNum}`)}
                                             disabled={isLocked}
+                                            style={ringColor ? { boxShadow: `0 0 0 4px ${ringColor}` } : {}}
                                         >
                                             <span>W{weekNum}</span>
-                                            {isLocked && (
+                                            {isComplete && (
+                                                <div className="complete-overlay">
+                                                    <Check size={28} strokeWidth={3} />
+                                                </div>
+                                            )}
+                                            {isLocked && !isComplete && (
                                                 <div className="lock-overlay">
                                                     <Lock size={12} />
                                                 </div>
