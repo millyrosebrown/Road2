@@ -25,7 +25,7 @@ const getFaceFromRating = (rating) => {
 export default function WeekPlanner() {
     const { weekNumber } = useParams()
     const navigate = useNavigate()
-    const { profile, user, isAuthenticated, loading: authLoading } = useAuth()
+    const { profile, user, isAuthenticated, loading: authLoading, updateProfile } = useAuth()
     const [journeyProgress, setJourneyProgress] = useState(null)
     const [loading, setLoading] = useState(true)
 
@@ -285,8 +285,8 @@ export default function WeekPlanner() {
                 completedWeeks: newCompletedWeeks
             })
 
-            // Update currentWeek to unlock next week
-            await userService.updateProfile(user.$id, {
+            // Update currentWeek to unlock next week - use AuthContext's updateProfile to refresh state
+            await updateProfile({
                 currentWeek: weekNum + 1
             })
 
