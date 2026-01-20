@@ -295,6 +295,35 @@ export const exerciseService = {
             console.error('Complete exercise error:', error);
             throw error;
         }
+    },
+
+    // Update exercise (for completedSets stored in notes as JSON)
+    async updateExercise(exerciseId, data) {
+        try {
+            return await databases.updateDocument(
+                DATABASE_ID,
+                COLLECTIONS.EXERCISES,
+                exerciseId,
+                data
+            );
+        } catch (error) {
+            console.error('Update exercise error:', error);
+            throw error;
+        }
+    },
+
+    // Delete an exercise
+    async deleteExercise(exerciseId) {
+        try {
+            return await databases.deleteDocument(
+                DATABASE_ID,
+                COLLECTIONS.EXERCISES,
+                exerciseId
+            );
+        } catch (error) {
+            console.error('Delete exercise error:', error);
+            throw error;
+        }
     }
 };
 

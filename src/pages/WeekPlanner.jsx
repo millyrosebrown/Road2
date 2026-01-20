@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Flag, Calendar, Plus, Loader2, Check, X, Trophy, Star } from 'lucide-react'
 import { useAuth } from '../lib/AuthContext'
-import { journeyService, userService } from '../lib/services'
+import { journeyService, userService, exerciseService } from '../lib/services'
 
 // Rating faces for set completion
 const RATING_FACES = [
@@ -66,6 +66,49 @@ export default function WeekPlanner() {
         fetchProgress()
     }, [user, authLoading])
 
+    // Load exercises from database when weekDays are ready
+    useEffect(() => {
+        const loadExercises = async () => {
+            if (!user?.$id || weekNum === undefined) return
+
+            try {
+                // Calculate the week date range
+                const today = new Date()
+                const startOfCurrentWeek = new Date(today)
+                startOfCurrentWeek.setDate(today.getDate() - today.getDay() + 1)
+                const weekOffset = (weekNum - 1) * 7
+                const weekStart = new Date(startOfCurrentWeek)
+                weekStart.setDate(weekStart.getDate() + weekOffset)
+                const weekEnd = new Date(weekStart)
+                weekEnd.setDate(weekEnd.getDate() + 6)
+
+                const startDate = weekStart.toISOString().split('T')[0]
+                const endDate = weekEnd.toISOString().split('T')[0]
+
+                const dbExercises = await exerciseService.getWeekExercises(user.$id, startDate, endDate)
+
+                // Convert to our exercises format { dateKey: [exercises] }
+                const exercisesByDate = {}
+                dbExercises.forEach(ex => {
+                    if (!exercisesByDate[ex.date]) {
+                        exercisesByDate[ex.date] = []
+                    }
+                    exercisesByDate[ex.date].push({
+                        id: ex.$id,
+                        name: ex.name,
+                        sets: ex.sets,
+                        reps: ex.reps,
+                        completedSets: ex.notes ? JSON.parse(ex.notes) : []
+                    })
+                })
+                setExercises(exercisesByDate)
+            } catch (error) {
+                console.error('Error loading exercises:', error)
+            }
+        }
+        loadExercises()
+    }, [user, weekNum])
+
     // Scroll to top when page loads
     useEffect(() => {
         window.scrollTo(0, 0)
@@ -104,24 +147,37 @@ export default function WeekPlanner() {
     const ultimateGoal = journeyProgress?.ultimateGoal || profile?.ultimateGoal || 'your goal'
 
     // Add exercise handler
-    const handleAddExercise = (dayKey) => {
+    const handleAddExercise = async (dayKey) => {
         if (!newExercise.name.trim()) return
 
-        const exercise = {
-            id: Date.now(),
-            name: newExercise.name,
-            sets: parseInt(newExercise.sets) || 3,
-            reps: parseInt(newExercise.reps) || 10,
-            completedSets: [] // { rating, comment }
+        try {
+            // Save to database
+            const saved = await exerciseService.logExercise(user.$id, {
+                name: newExercise.name,
+                sets: parseInt(newExercise.sets) || 3,
+                reps: parseInt(newExercise.reps) || 10,
+                date: dayKey,
+                notes: '[]' // Empty completedSets as JSON
+            })
+
+            const exercise = {
+                id: saved.$id, // Use Appwrite document ID
+                name: newExercise.name,
+                sets: parseInt(newExercise.sets) || 3,
+                reps: parseInt(newExercise.reps) || 10,
+                completedSets: []
+            }
+
+            setExercises(prev => ({
+                ...prev,
+                [dayKey]: [...(prev[dayKey] || []), exercise]
+            }))
+
+            setNewExercise({ name: '', sets: 3, reps: 10 })
+            setAddingExerciseDay(null)
+        } catch (error) {
+            console.error('Error adding exercise:', error)
         }
-
-        setExercises(prev => ({
-            ...prev,
-            [dayKey]: [...(prev[dayKey] || []), exercise]
-        }))
-
-        setNewExercise({ name: '', sets: 3, reps: 10 })
-        setAddingExerciseDay(null)
     }
 
     // Open rating modal for a set
@@ -138,7 +194,7 @@ export default function WeekPlanner() {
     }
 
     // Submit rating for a set
-    const handleSubmitRating = () => {
+    const handleSubmitRating = async () => {
         if (!selectedRating || !ratingModal) return
 
         const { dayKey, exerciseId, setIndex } = ratingModal
@@ -150,6 +206,22 @@ export default function WeekPlanner() {
         const nextSetIndex = setIndex + 1
         const isLastSet = nextSetIndex >= totalSets
 
+        // Calculate new completedSets
+        const newCompletedSets = [
+            ...(exercise?.completedSets || []),
+            { rating: selectedRating, comment: ratingComment }
+        ]
+
+        // Save to database
+        try {
+            await exerciseService.updateExercise(exerciseId, {
+                notes: JSON.stringify(newCompletedSets),
+                completed: newCompletedSets.length >= totalSets
+            })
+        } catch (error) {
+            console.error('Error saving exercise rating:', error)
+        }
+
         setExercises(prev => {
             const updatedDayExercises = [...(prev[dayKey] || [])]
             const exerciseIndex = updatedDayExercises.findIndex(e => e.id === exerciseId)
@@ -157,10 +229,7 @@ export default function WeekPlanner() {
             if (exerciseIndex >= 0) {
                 updatedDayExercises[exerciseIndex] = {
                     ...updatedDayExercises[exerciseIndex],
-                    completedSets: [
-                        ...updatedDayExercises[exerciseIndex].completedSets,
-                        { rating: selectedRating, comment: ratingComment }
-                    ]
+                    completedSets: newCompletedSets
                 }
             }
 
