@@ -313,9 +313,10 @@ export default function Journey() {
                                 const pos = positions[weekNum - 1];
                                 const isLocked = weekNum > (profile?.currentWeek || 1);
                                 const isActive = weekNum === (profile?.currentWeek || 1);
-                                const isComplete = journeyProgress?.[`week${weekNum}Completed`] === true;
-                                const daysExercised = journeyProgress?.[`week${weekNum}DaysExercised`] || 0;
-                                const ringColor = isComplete ? getRingColor(daysExercised) : null;
+                                const completedWeeks = journeyProgress?.completedWeeks || [];
+                                const isComplete = completedWeeks.includes(weekNum);
+                                // For now, use a default based on completion - green for complete
+                                const ringColor = isComplete ? '#22C55E' : null;
                                 const isNewlyUnlocked = newlyUnlocked === weekNum;
 
                                 return (

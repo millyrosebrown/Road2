@@ -275,12 +275,14 @@ export default function WeekPlanner() {
                 if (hasCompletedExercise) daysWithExercises++
             })
 
-            // Save week completion data to journey
+            // Get existing completed weeks and add current week
+            const existingCompletedWeeks = journeyProgress?.completedWeeks || []
+            const newCompletedWeeks = [...new Set([...existingCompletedWeeks, weekNum])]
+
+            // Save week completion - add weekNum to completedWeeks array
             await journeyService.saveProgress(user.$id, {
                 ...journeyProgress,
-                [`week${weekNum}Completed`]: true,
-                [`week${weekNum}DaysExercised`]: daysWithExercises,
-                [`week${weekNum}GoalRatings`]: JSON.stringify(goalRatings)
+                completedWeeks: newCompletedWeeks
             })
 
             // Update currentWeek to unlock next week
