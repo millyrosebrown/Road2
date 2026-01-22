@@ -316,8 +316,18 @@ export default function Journey() {
                                 const completedWeeks = journeyProgress?.completedWeeks || [];
                                 const isComplete = completedWeeks.includes(weekNum);
 
-                                // Ring color - green for completed weeks
-                                const ringColor = isComplete ? '#16A34A' : null;
+                                // Get ring color from weekStats (based on missed exercises)
+                                let ringColor = null;
+                                if (isComplete) {
+                                    try {
+                                        const weekStats = journeyProgress?.weekStats ? JSON.parse(journeyProgress.weekStats) : {};
+                                        const thisWeekStats = weekStats[weekNum];
+                                        const missedExercises = thisWeekStats?.missed ?? 0;
+                                        ringColor = getRingColor(missedExercises);
+                                    } catch {
+                                        ringColor = '#16A34A'; // Default green if parsing fails
+                                    }
+                                }
                                 const isNewlyUnlocked = newlyUnlocked === weekNum;
 
                                 return (

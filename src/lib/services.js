@@ -350,6 +350,7 @@ export const journeyService = {
                         weeklyGoal1: data.weeklyGoal1 || '',
                         weeklyGoal2: data.weeklyGoal2 || '',
                         weeklyGoal3: data.weeklyGoal3 || '',
+                        weekStats: data.weekStats || '',
                         updatedAt: new Date().toISOString(),
                     }
                 );
@@ -366,6 +367,7 @@ export const journeyService = {
                         weeklyGoal1: data.weeklyGoal1 || '',
                         weeklyGoal2: data.weeklyGoal2 || '',
                         weeklyGoal3: data.weeklyGoal3 || '',
+                        weekStats: data.weekStats || '',
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString(),
                     }
