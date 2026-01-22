@@ -146,8 +146,13 @@ export default function WeekPlanner() {
     const weekEndStr = weekDays[6].date.toLocaleDateString('en-AU', { month: 'short', day: 'numeric', year: 'numeric' })
     const ultimateGoal = journeyProgress?.ultimateGoal || profile?.ultimateGoal || 'your goal'
 
+    // Check if this week is already completed (read-only)
+    const completedWeeks = journeyProgress?.completedWeeks || []
+    const isWeekComplete = completedWeeks.includes(weekNum)
+
     // Add exercise handler
     const handleAddExercise = async (dayKey) => {
+        if (isWeekComplete) return // Can't add to completed weeks
         if (!newExercise.name.trim()) return
 
         try {
@@ -267,22 +272,40 @@ export default function WeekPlanner() {
         if (goalRatings.some(r => r === null)) return
 
         try {
-            // Count days with at least one completed exercise
-            let daysWithExercises = 0
+            // Count total exercises and completed exercises for the week
+            let totalExercises = 0
+            let completedExercises = 0
+
             weekDays.forEach(day => {
                 const dayExercises = exercises[day.dateKey] || []
-                const hasCompletedExercise = dayExercises.some(ex => ex.completedSets.length >= ex.sets)
-                if (hasCompletedExercise) daysWithExercises++
+                dayExercises.forEach(ex => {
+                    totalExercises++
+                    if (ex.completedSets.length >= ex.sets) {
+                        completedExercises++
+                    }
+                })
             })
+
+            const missedExercises = totalExercises - completedExercises
 
             // Get existing completed weeks and add current week
             const existingCompletedWeeks = journeyProgress?.completedWeeks || []
             const newCompletedWeeks = [...new Set([...existingCompletedWeeks, weekNum])]
 
-            // Save week completion - add weekNum to completedWeeks array
+            // Get existing week stats and add this week's stats
+            const existingWeekStats = journeyProgress?.weekStats ? JSON.parse(journeyProgress.weekStats) : {}
+            existingWeekStats[weekNum] = {
+                total: totalExercises,
+                completed: completedExercises,
+                missed: missedExercises,
+                goalRatings: goalRatings
+            }
+
+            // Save week completion with exercise stats
             await journeyService.saveProgress(user.$id, {
                 ...journeyProgress,
-                completedWeeks: newCompletedWeeks
+                completedWeeks: newCompletedWeeks,
+                weekStats: JSON.stringify(existingWeekStats)
             })
 
             // Update currentWeek to unlock next week - use AuthContext's updateProfile to refresh state
@@ -323,6 +346,9 @@ export default function WeekPlanner() {
                     <div className="week-title">
                         <span className="week-number-label">Week {weekNum}</span>
                         <span className="week-subtitle">of your Road 2</span>
+                        {isWeekComplete && (
+                            <span className="view-only-badge">✓ Completed</span>
+                        )}
                     </div>
                     <div className="week-goal">
                         <Flag size={16} />
@@ -453,12 +479,12 @@ export default function WeekPlanner() {
                                             </button>
                                         </div>
                                     </div>
-                                ) : (
+                                ) : !isWeekComplete ? (
                                     <button className="add-exercise-btn" onClick={() => setAddingExerciseDay(index)}>
                                         <Plus size={18} />
                                         <span>Add exercise</span>
                                     </button>
-                                )}
+                                ) : null}
                             </div>
                         </div>
                     )

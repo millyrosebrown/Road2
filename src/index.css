@@ -1610,3 +1610,16 @@ p {
   0% { opacity: 1; transform: scale(1); }
   100% { opacity: 0; transform: scale(0.5) rotate(15deg); }
 }
+
+/* View Only Badge */
+.view-only-badge {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  margin-left: var(--spacing-2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}

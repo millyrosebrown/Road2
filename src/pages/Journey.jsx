@@ -4,14 +4,13 @@ import { useAuth } from '../lib/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { goalsService, journeyService } from '../lib/services'
 
-// Get ring color based on days with exercises
-const getRingColor = (daysExercised) => {
-    if (daysExercised >= 7) return '#16A34A' // Dark green
-    if (daysExercised === 6) return '#22C55E' // Light green
-    if (daysExercised === 5) return '#84CC16' // Yellow-green
-    if (daysExercised === 4) return '#EAB308' // Yellow
-    if (daysExercised === 3) return '#F97316' // Orange
-    return '#EF4444' // Red (0-2 days)
+// Get ring color based on exercises missed (total - completed)
+const getRingColor = (missedExercises) => {
+    if (missedExercises === 0) return '#16A34A' // Dark green - all complete
+    if (missedExercises === 1) return '#22C55E' // Light green - missed 1
+    if (missedExercises === 2) return '#EAB308' // Yellow - missed 2
+    if (missedExercises === 3) return '#F97316' // Orange - missed 3
+    return '#EF4444' // Red - missed 4+
 }
 
 export default function Journey() {
@@ -47,7 +46,8 @@ export default function Journey() {
                     }
                     // Check for newly unlocked week
                     const currentWeek = profile?.currentWeek || 1
-                    if (currentWeek > 1 && progress?.[`week${currentWeek - 1}Completed`]) {
+                    const completedWeeks = progress?.completedWeeks || []
+                    if (currentWeek > 1 && completedWeeks.includes(currentWeek - 1)) {
                         setNewlyUnlocked(currentWeek)
                         // Clear animation after a few seconds
                         setTimeout(() => setNewlyUnlocked(null), 3000)
@@ -315,8 +315,9 @@ export default function Journey() {
                                 const isActive = weekNum === (profile?.currentWeek || 1);
                                 const completedWeeks = journeyProgress?.completedWeeks || [];
                                 const isComplete = completedWeeks.includes(weekNum);
-                                // For now, use a default based on completion - green for complete
-                                const ringColor = isComplete ? '#22C55E' : null;
+
+                                // Ring color - green for completed weeks
+                                const ringColor = isComplete ? '#16A34A' : null;
                                 const isNewlyUnlocked = newlyUnlocked === weekNum;
 
                                 return (
