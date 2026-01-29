@@ -186,14 +186,17 @@ export default function Journey() {
                         <div className="goal-panel-container">
                             <div className="goal-panel">
                                 <div className="goal-panel-header">
-                                    <Navigation size={24} color="var(--teal)" />
+                                    <Flag size={22} color="var(--teal)" />
                                     <span>Set Your Destination</span>
                                 </div>
                                 <div className="goal-panel-content">
                                     <h3 className="goal-panel-title">
                                         Now it's time to picture where you want this journey to lead.
                                     </h3>
-                                    <p className="goal-panel-subtitle">What is your ultimate goal?</p>
+                                    <p className="goal-panel-subtitle">
+                                        <Flag size={16} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }} />
+                                        This is your main recovery goal
+                                    </p>
                                     <div className="goal-panel-label">Where does your road lead 2?</div>
                                     <form onSubmit={handleSetDestination} className="goal-input-group">
                                         <input
