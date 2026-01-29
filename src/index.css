@@ -1839,9 +1839,8 @@ p {
   left: 0;
   right: 0;
   bottom: 0;
-  background: url('/road2-banner.png') center 20%;
-  background-size: contain;
-  background-repeat: no-repeat;
+  background: url('/onboarding-bg.png') center center;
+  background-size: cover;
   background-color: #f5f0e8;
 }
 
