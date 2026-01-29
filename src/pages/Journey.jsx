@@ -157,16 +157,9 @@ export default function Journey() {
         <div className="journey-map-container">
             {/* 1. INITIAL ONBOARDING - ANIMATED FLOW */}
             {showOnboarding && (
-                <div className={`onboarding-fullscreen ${onboardingStep === 'zooming' ? 'zooming' : ''}`}>
-                    {/* Map Background */}
+                <div className={`onboarding-fullscreen ${onboardingStep === 'zooming' ? 'zooming' : ''} ${onboardingStep === 'goal' ? 'goal-ready' : ''}`}>
+                    {/* Map Background - switches from navy to green flag */}
                     <div className="onboarding-map-bg" />
-
-                    {/* Green flag overlay (appears during zoom) */}
-                    {(onboardingStep === 'zooming' || onboardingStep === 'goal') && (
-                        <div className="green-flag-overlay">
-                            <Flag size={60} color="#10B981" />
-                        </div>
-                    )}
 
                     {/* Step 1: Welcome Screen */}
                     {onboardingStep === 'welcome' && (
