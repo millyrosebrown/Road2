@@ -1949,12 +1949,13 @@ p {
 .goal-panel-header {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--spacing-3);
   padding: var(--spacing-4);
-  background: var(--gray-50);
-  border-bottom: 1px solid var(--gray-200);
-  font-weight: 600;
-  color: var(--navy);
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
 }
 
 .goal-panel-content {
@@ -1994,16 +1995,23 @@ p {
 .goal-input {
   flex: 1;
   padding: var(--spacing-4);
-  border: 2px solid var(--gray-200);
+  border: 3px solid var(--teal);
   border-radius: var(--radius-lg);
   font-size: 1rem;
+  background: rgba(20, 184, 166, 0.05);
   transition: all var(--transition-normal);
+}
+
+.goal-input::placeholder {
+  color: var(--gray-400);
+  font-style: italic;
 }
 
 .goal-input:focus {
   outline: none;
-  border-color: var(--teal);
-  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+  border-color: #059669;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.2);
 }
 
 .goal-submit-btn {
@@ -2039,15 +2047,13 @@ p {
   }
 }
 
-/* Zoom Animation - uses navy flag bg */
+/* Zoom Animation - slow zoom to flag */
 .onboarding-fullscreen.zooming .onboarding-map-bg {
   animation: zoomToFlag 3.5s ease-in-out forwards;
 }
 
-/* After zoom - switch to green flag bg and stay zoomed */
+/* After zoom - stay zoomed */
 .onboarding-fullscreen.goal-ready .onboarding-map-bg {
-  background: url('/onboarding-bg-green.png') center 15%;
-  background-size: cover;
   transform: scale(1.8);
   transform-origin: center 15%;
 }
