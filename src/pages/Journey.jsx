@@ -24,6 +24,7 @@ export default function Journey() {
     const [journeyLoading, setJourneyLoading] = useState(true)
     const [journeyProgress, setJourneyProgress] = useState(null) // For week completion data
     const [newlyUnlocked, setNewlyUnlocked] = useState(null) // Track which week was just unlocked
+    const [onboardingStep, setOnboardingStep] = useState('welcome') // 'welcome' or 'goal'
     const navigate = useNavigate()
 
     // Derived states
@@ -154,32 +155,68 @@ export default function Journey() {
 
     return (
         <div className="journey-map-container">
-            {/* 1. INITIAL ONBOARDING (SET DESTINATION) */}
+            {/* 1. INITIAL ONBOARDING - TWO STEP FLOW */}
             {showOnboarding && (
-                <div className="onboarding-overlay" style={{ zIndex: 2000 }}>
-                    <div className="onboarding-content">
-                        <div className="nav-icon-wrapper" style={{ margin: '0 auto 1.5rem', background: 'var(--gradient-teal)', width: 80, height: 80 }}>
-                            <Navigation size={40} color="white" />
-                        </div>
-                        <h1 className="onboarding-title">Welcome to your recovery journey</h1>
-                        <p className="onboarding-subtitle">Where does your Road lead 2?</p>
+                <div className="onboarding-fullscreen">
+                    {/* Map Background */}
+                    <div className="onboarding-map-bg" />
 
-                        <form onSubmit={handleSetDestination} className="map-input-group">
-                            <div style={{ paddingLeft: '1rem', color: 'var(--text-muted)' }}><Search size={22} /></div>
-                            <input
-                                type="text"
-                                className="map-input"
-                                placeholder="e.g. Back on the football pitch"
-                                value={destinationInput}
-                                onChange={(e) => setDestinationInput(e.target.value)}
-                                disabled={saving}
-                                autoFocus
-                            />
-                            <button type="submit" className="map-input-btn" disabled={saving || !destinationInput.trim()}>
-                                {saving ? <Loader2 className="animate-spin" size={24} /> : <ArrowRight size={24} />}
-                            </button>
-                        </form>
-                    </div>
+                    {/* Step 1: Welcome Screen */}
+                    {onboardingStep === 'welcome' && (
+                        <div className="welcome-content">
+                            <div className="welcome-card">
+                                <h1 className="welcome-title">Welcome to</h1>
+                                <h2 className="welcome-brand">Road 2 Rehab</h2>
+                                <p className="welcome-tagline">
+                                    Your personalised journey from where you are now, to where you want to be.
+                                </p>
+                                <p className="welcome-question">Are you ready to begin?</p>
+                                <button
+                                    className="begin-btn"
+                                    onClick={() => setOnboardingStep('goal')}
+                                >
+                                    Begin
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Step 2: Goal Input Panel (Google Maps style) */}
+                    {onboardingStep === 'goal' && (
+                        <div className="goal-panel-container">
+                            <div className="goal-panel">
+                                <div className="goal-panel-header">
+                                    <Navigation size={24} color="var(--teal)" />
+                                    <span>Set Your Destination</span>
+                                </div>
+                                <div className="goal-panel-content">
+                                    <h3 className="goal-panel-title">
+                                        Now it's time to picture where you want this journey to lead.
+                                    </h3>
+                                    <p className="goal-panel-subtitle">What is your ultimate goal?</p>
+                                    <div className="goal-panel-label">Where does your road lead 2?</div>
+                                    <form onSubmit={handleSetDestination} className="goal-input-group">
+                                        <input
+                                            type="text"
+                                            className="goal-input"
+                                            placeholder="e.g. Back on the football pitch"
+                                            value={destinationInput}
+                                            onChange={(e) => setDestinationInput(e.target.value)}
+                                            disabled={saving}
+                                            autoFocus
+                                        />
+                                        <button
+                                            type="submit"
+                                            className="goal-submit-btn"
+                                            disabled={saving || !destinationInput.trim()}
+                                        >
+                                            {saving ? <Loader2 className="animate-spin" size={20} /> : <ArrowRight size={20} />}
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
 

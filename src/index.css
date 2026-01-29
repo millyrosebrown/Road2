@@ -1753,3 +1753,219 @@ p {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+/* ============================================
+   NEW ONBOARDING STYLES
+   ============================================ */
+
+/* Fullscreen onboarding container */
+.onboarding-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2000;
+  overflow: hidden;
+}
+
+/* Map background */
+.onboarding-map-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('/road2-banner.png') center center;
+  background-size: cover;
+  filter: brightness(0.85) saturate(1.1);
+}
+
+/* Welcome Screen */
+.welcome-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: var(--spacing-6);
+  animation: fadeIn 0.8s ease-out;
+}
+
+.welcome-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: var(--radius-2xl);
+  padding: var(--spacing-8) var(--spacing-6);
+  text-align: center;
+  max-width: 340px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.welcome-title {
+  font-size: 1.25rem;
+  color: var(--gray-600);
+  font-weight: 500;
+  margin-bottom: var(--spacing-1);
+}
+
+.welcome-brand {
+  font-size: 2rem;
+  font-weight: 800;
+  background: var(--gradient-teal);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--spacing-4);
+}
+
+.welcome-tagline {
+  font-size: 1rem;
+  color: var(--gray-600);
+  line-height: 1.6;
+  margin-bottom: var(--spacing-5);
+}
+
+.welcome-question {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: var(--spacing-5);
+}
+
+.begin-btn {
+  width: 100%;
+  padding: var(--spacing-4);
+  background: var(--gradient-teal);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  box-shadow: 0 4px 20px rgba(20, 184, 166, 0.4);
+}
+
+.begin-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(20, 184, 166, 0.5);
+}
+
+/* Goal Panel (Google Maps style) */
+.goal-panel-container {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100%;
+  padding: var(--spacing-4);
+  padding-bottom: 100px;
+}
+
+.goal-panel {
+  background: white;
+  border-radius: var(--radius-2xl);
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  animation: slideUpPanel 0.5s ease-out;
+}
+
+@keyframes slideUpPanel {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.goal-panel-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  background: var(--gray-50);
+  border-bottom: 1px solid var(--gray-200);
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.goal-panel-content {
+  padding: var(--spacing-5);
+}
+
+.goal-panel-title {
+  font-size: 1.1rem;
+  color: var(--navy);
+  font-weight: 600;
+  line-height: 1.5;
+  margin-bottom: var(--spacing-2);
+}
+
+.goal-panel-subtitle {
+  font-size: 0.95rem;
+  color: var(--gray-600);
+  margin-bottom: var(--spacing-4);
+}
+
+.goal-panel-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--teal);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--spacing-2);
+}
+
+.goal-input-group {
+  display: flex;
+  gap: var(--spacing-2);
+}
+
+.goal-input {
+  flex: 1;
+  padding: var(--spacing-4);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  font-size: 1rem;
+  transition: all var(--transition-normal);
+}
+
+.goal-input:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+}
+
+.goal-submit-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radius-lg);
+  background: var(--gradient-teal);
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.goal-submit-btn:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.goal-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
