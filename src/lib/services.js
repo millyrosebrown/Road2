@@ -324,6 +324,21 @@ export const exerciseService = {
             console.error('Delete exercise error:', error);
             throw error;
         }
+    },
+
+    // Get all exercises for a user
+    async getUserExercises(userId) {
+        try {
+            const response = await databases.listDocuments(
+                DATABASE_ID,
+                COLLECTIONS.EXERCISES,
+                [Query.equal('userId', userId), Query.limit(100)]
+            );
+            return response.documents;
+        } catch (error) {
+            console.error('Get user exercises error:', error);
+            return [];
+        }
     }
 };
 
