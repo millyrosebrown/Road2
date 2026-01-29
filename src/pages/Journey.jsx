@@ -176,7 +176,7 @@ export default function Journey() {
                                     onClick={() => {
                                         setOnboardingStep('zooming')
                                         // After zoom animation, show goal panel
-                                        setTimeout(() => setOnboardingStep('goal'), 2000)
+                                        setTimeout(() => setOnboardingStep('goal'), 3500)
                                     }}
                                 >
                                     Begin

@@ -2041,38 +2041,26 @@ p {
 
 /* Zoom Animation - uses navy flag bg */
 .onboarding-fullscreen.zooming .onboarding-map-bg {
-  animation: zoomToFlag 2s ease-in-out forwards;
+  animation: zoomToFlag 3.5s ease-in-out forwards;
 }
 
 /* After zoom - switch to green flag bg and stay zoomed */
 .onboarding-fullscreen.goal-ready .onboarding-map-bg {
-  background: url('/onboarding-bg-green.png') center center;
+  background: url('/onboarding-bg-green.png') center 15%;
   background-size: cover;
-  transform: scale(3);
-  transform-origin: center 25%;
+  transform: scale(1.8);
+  transform-origin: center 15%;
 }
 
 @keyframes zoomToFlag {
   0% {
     transform: scale(1);
-    transform-origin: center 25%;
-  }
-
-  60% {
-    transform: scale(3);
-    transform-origin: center 25%;
-  }
-
-  70% {
-    transform: scale(3);
-    transform-origin: center 25%;
+    transform-origin: center 15%;
   }
 
   100% {
-    transform: scale(3);
-    transform-origin: center 25%;
-    background: url('/onboarding-bg-green.png') center center;
-    background-size: cover;
+    transform: scale(1.8);
+    transform-origin: center 15%;
   }
 }
 
