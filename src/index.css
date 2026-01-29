@@ -1839,7 +1839,7 @@ p {
   left: 0;
   right: 0;
   bottom: 0;
-  background: url('/road2-banner.png') center center;
+  background: url('/road2-banner.png') center 20%;
   background-size: contain;
   background-repeat: no-repeat;
   background-color: #f5f0e8;
@@ -1850,26 +1850,27 @@ p {
   position: relative;
   z-index: 10;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   height: 100%;
   padding: var(--spacing-6);
+  padding-bottom: 100px;
   animation: fadeIn 0.8s ease-out;
 }
 
 .welcome-card {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(20px);
   border-radius: var(--radius-2xl);
   padding: var(--spacing-8) var(--spacing-6);
   text-align: center;
   max-width: 340px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
 }
 
 .welcome-title {
   font-size: 1.25rem;
-  color: var(--gray-600);
+  color: var(--navy);
   font-weight: 500;
   margin-bottom: var(--spacing-1);
 }
@@ -1877,16 +1878,13 @@ p {
 .welcome-brand {
   font-size: 2rem;
   font-weight: 800;
-  background: var(--gradient-teal);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--navy);
   margin-bottom: var(--spacing-4);
 }
 
 .welcome-tagline {
   font-size: 1rem;
-  color: var(--gray-600);
+  color: var(--navy);
   line-height: 1.6;
   margin-bottom: var(--spacing-5);
 }
