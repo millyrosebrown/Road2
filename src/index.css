@@ -2038,3 +2038,76 @@ p {
     opacity: 1;
   }
 }
+/* Zoom Animation */
+.onboarding-fullscreen.zooming .onboarding-map-bg {
+  animation: zoomToFlag 2s ease-in-out forwards;
+}
+
+@keyframes zoomToFlag {
+  0% {
+    transform: scale(1);
+    transform-origin: center 25%;
+  }
+  100% {
+    transform: scale(3);
+    transform-origin: center 25%;
+  }
+}
+
+/* Green Flag Overlay */
+.green-flag-overlay {
+  position: absolute;
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  animation: flagAppear 0.5s ease-out 1s forwards;
+  opacity: 0;
+}
+
+@keyframes flagAppear {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.5);
+  }
+  50% {
+    transform: translateX(-50%) scale(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+/* Zoom Overlay Text */
+.zoom-overlay {
+  position: relative;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.zoom-text {
+  background: rgba(255, 255, 255, 0.95);
+  padding: var(--spacing-4) var(--spacing-6);
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  color: var(--navy);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  animation: fadeInOut 2s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: scale(0.9); }
+  20% { opacity: 1; transform: scale(1); }
+  80% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.1); }
+}
+
+/* Goal panel appears on zoomed background */
+.onboarding-fullscreen:has(.goal-panel-container) .onboarding-map-bg {
+  transform: scale(3);
+  transform-origin: center 25%;
+}

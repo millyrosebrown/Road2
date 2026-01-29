@@ -155,11 +155,18 @@ export default function Journey() {
 
     return (
         <div className="journey-map-container">
-            {/* 1. INITIAL ONBOARDING - TWO STEP FLOW */}
+            {/* 1. INITIAL ONBOARDING - ANIMATED FLOW */}
             {showOnboarding && (
-                <div className="onboarding-fullscreen">
+                <div className={`onboarding-fullscreen ${onboardingStep === 'zooming' ? 'zooming' : ''}`}>
                     {/* Map Background */}
                     <div className="onboarding-map-bg" />
+
+                    {/* Green flag overlay (appears during zoom) */}
+                    {(onboardingStep === 'zooming' || onboardingStep === 'goal') && (
+                        <div className="green-flag-overlay">
+                            <Flag size={60} color="#10B981" />
+                        </div>
+                    )}
 
                     {/* Step 1: Welcome Screen */}
                     {onboardingStep === 'welcome' && (
@@ -173,7 +180,11 @@ export default function Journey() {
                                 <p className="welcome-question">Are you ready to begin?</p>
                                 <button
                                     className="begin-btn"
-                                    onClick={() => setOnboardingStep('goal')}
+                                    onClick={() => {
+                                        setOnboardingStep('zooming')
+                                        // After zoom animation, show goal panel
+                                        setTimeout(() => setOnboardingStep('goal'), 2000)
+                                    }}
                                 >
                                     Begin
                                 </button>
@@ -181,12 +192,19 @@ export default function Journey() {
                         </div>
                     )}
 
-                    {/* Step 2: Goal Input Panel (Google Maps style) */}
+                    {/* Step 2: Zooming animation (intermediate) */}
+                    {onboardingStep === 'zooming' && (
+                        <div className="zoom-overlay">
+                            <div className="zoom-text">Setting your destination...</div>
+                        </div>
+                    )}
+
+                    {/* Step 3: Goal Input Panel (Google Maps style) */}
                     {onboardingStep === 'goal' && (
                         <div className="goal-panel-container">
                             <div className="goal-panel">
                                 <div className="goal-panel-header">
-                                    <Flag size={22} color="var(--teal)" />
+                                    <Flag size={22} color="#10B981" />
                                     <span>Set Your Destination</span>
                                 </div>
                                 <div className="goal-panel-content">
