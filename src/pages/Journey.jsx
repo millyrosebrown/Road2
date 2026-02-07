@@ -95,6 +95,8 @@ export default function Journey() {
         setSaving(true)
         try {
             await updateProfile({ ultimateGoal: destinationInput })
+            // After saving goal, show How it Works
+            setOnboardingStep('howItWorks')
         } catch (error) {
             console.error('Error saving goal:', error)
         } finally {
@@ -157,8 +159,8 @@ export default function Journey() {
         <div className="journey-map-container">
             {/* 1. INITIAL ONBOARDING - ANIMATED FLOW */}
             {showOnboarding && (
-                <div className={`onboarding-fullscreen ${onboardingStep === 'zooming' ? 'zooming' : ''} ${onboardingStep === 'goal' ? 'goal-ready' : ''}`}>
-                    {/* Map Background - switches from navy to green flag */}
+                <div className={`onboarding-fullscreen ${onboardingStep === 'zooming' ? 'zooming' : ''} ${onboardingStep === 'goal' || onboardingStep === 'howItWorks' ? 'goal-ready' : ''}`}>
+                    {/* Map Background */}
                     <div className="onboarding-map-bg" />
 
                     {/* Step 1: Welcome Screen */}
@@ -175,7 +177,7 @@ export default function Journey() {
                                     className="begin-btn"
                                     onClick={() => {
                                         setOnboardingStep('zooming')
-                                        // After zoom animation, show goal panel
+                                        // After zoom animation, show goal input
                                         setTimeout(() => setOnboardingStep('goal'), 3500)
                                     }}
                                 >
@@ -192,12 +194,56 @@ export default function Journey() {
                         </div>
                     )}
 
-                    {/* Step 3: Goal Input Panel (Google Maps style) */}
+                    {/* Step 3: How It Works Screen */}
+                    {onboardingStep === 'howItWorks' && (
+                        <div className="how-it-works-container">
+                            <div className="how-it-works-card">
+                                <div className="hiw-header">
+                                    <div className="hiw-step-badge">How It Works</div>
+                                </div>
+
+                                <div className="hiw-quote-box">
+                                    <p><strong>Your commitment determines your success.</strong> This app will help you stay on track.</p>
+                                </div>
+
+                                <div className="hiw-section">
+                                    <h3 className="hiw-section-title">Week Color Scale:</h3>
+                                    <p className="hiw-section-desc">Each week changes color based on exercises completed:</p>
+                                    <div className="color-scale-list">
+                                        <div className="color-scale-item"><span className="color-dot" style={{ background: '#16A34A' }}></span> 0 missed = Dark Green</div>
+                                        <div className="color-scale-item"><span className="color-dot" style={{ background: '#22C55E' }}></span> 1 missed = Light Green</div>
+                                        <div className="color-scale-item"><span className="color-dot" style={{ background: '#BEF264' }}></span> 2 missed = Yellow-Green</div>
+                                        <div className="color-scale-item"><span className="color-dot" style={{ background: '#EAB308' }}></span> 3 missed = Yellow</div>
+                                        <div className="color-scale-item"><span className="color-dot" style={{ background: '#F97316' }}></span> 4 missed = Orange</div>
+                                        <div className="color-scale-item"><span className="color-dot" style={{ background: '#EF4444' }}></span> 5+ missed = Red</div>
+                                    </div>
+                                </div>
+
+                                <div className="hiw-section">
+                                    <h3 className="hiw-section-title">Appointment Readiness:</h3>
+                                    <p className="hiw-section-desc">Shows how prepared you are for your next physio visit.</p>
+                                    <div className="readiness-bar">
+                                        <span className="readiness-label left">Not Ready</span>
+                                        <span className="readiness-label right">Ready</span>
+                                    </div>
+                                </div>
+
+                                <button
+                                    className="hiw-continue-btn"
+                                    onClick={() => setOnboardingStep('goal')}
+                                >
+                                    Got It!
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Step 4: Goal Input Panel (Google Maps style) */}
                     {onboardingStep === 'goal' && (
                         <div className="goal-panel-container">
                             <div className="goal-panel">
                                 <div className="goal-panel-header">
-                                    <Flag size={22} color="#10B981" />
+                                    <Flag size={22} color="white" />
                                     <span>Set Your Destination</span>
                                 </div>
                                 <div className="goal-panel-content">
@@ -234,17 +280,43 @@ export default function Journey() {
                 </div>
             )}
 
-            {/* 2. READY TO START STATE */}
+            {/* 2. READY TO START STATE - Google Maps style destination */}
             {hasDestination && !journeyStarted && !showWeeklySetup && (
-                <div className="journey-overlay-center">
-                    <div className="glass-card journey-start-card" style={{ zIndex: 100 }}>
-                        <h2 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', color: 'var(--navy-primary)' }}>Are you ready to start your Road 2:</h2>
-                        <div className="goal-highlight">{profile.ultimateGoal}</div>
-                        <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginBottom: '1.5rem', maxWidth: '280px', margin: '0 auto 1.5rem' }}>
-                            We'll start by setting 3 weekly activities to focus on.
+                <div className="journey-ready-container">
+                    {/* Destination Pin/Bubble - Google Maps style */}
+                    <div className="destination-bubble">
+                        <div className="destination-bubble-content">
+                            <div className="destination-icon">
+                                <Flag size={24} color="white" />
+                            </div>
+                            <div className="destination-text-container">
+                                <span className="destination-eyebrow">YOUR DESTINATION</span>
+                                <h2 className="destination-goal-text">{profile.ultimateGoal}</h2>
+                            </div>
+                        </div>
+                        <div className="destination-bubble-pointer" />
+                    </div>
+
+                    {/* Pulsing map pin dot */}
+                    <div className="destination-pin-dot">
+                        <div className="pin-pulse" />
+                        <div className="pin-center" />
+                    </div>
+
+                    {/* Call to Action Card */}
+                    <div className="journey-cta-card">
+                        <div className="cta-icon-row">
+                            <div className="route-line" />
+                            <Navigation size={28} className="cta-nav-icon" />
+                            <div className="route-line" />
+                        </div>
+                        <h3 className="cta-heading">Ready to reach your destination?</h3>
+                        <p className="cta-subtext">
+                            Click <strong>Begin Journey</strong> to discover the personalized route we've mapped to get you there.
                         </p>
-                        <button className="btn btn-primary btn-full flex-center" onClick={handleStartJourney} style={{ gap: '0.5rem' }}>
-                            <Play size={20} fill="currentColor" /> START JOURNEY
+                        <button className="begin-journey-btn" onClick={handleStartJourney}>
+                            <Play size={22} fill="currentColor" />
+                            <span>BEGIN JOURNEY</span>
                         </button>
                     </div>
                 </div>
