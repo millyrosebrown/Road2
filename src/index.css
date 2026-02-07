@@ -828,6 +828,377 @@ p {
   transform: translateY(-1px) scale(1);
 }
 
+/* ========================================
+   Three Steps to Success UI
+   ======================================== */
+.three-steps-overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  z-index: 2000;
+  overflow-y: auto;
+  padding: var(--spacing-4);
+  padding-top: calc(env(safe-area-inset-top) + var(--spacing-4));
+  padding-bottom: calc(120px + env(safe-area-inset-bottom));
+}
+
+.three-steps-container {
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.three-steps-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--navy-primary);
+  text-align: center;
+  margin: 0 0 var(--spacing-2) 0;
+  background: linear-gradient(135deg, #1E3A5F 0%, #14B8A6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.three-steps-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin: 0 0 var(--spacing-6) 0;
+}
+
+/* Step Cards */
+.step-card {
+  background: white;
+  border-radius: 20px;
+  padding: var(--spacing-5);
+  margin-bottom: var(--spacing-4);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.step-card.complete {
+  border-color: #22C55E;
+  background: linear-gradient(to right, rgba(34, 197, 94, 0.05), white);
+}
+
+.step-card.info-card {
+  border-color: #A78BFA;
+  background: linear-gradient(to right, rgba(167, 139, 250, 0.05), white);
+}
+
+.step-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-3);
+}
+
+.step-number {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8B5CF6 0%, #A78BFA 100%);
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.step-number.complete {
+  background: linear-gradient(135deg, #16A34A 0%, #22C55E 100%);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+}
+
+.step-number.info {
+  background: linear-gradient(135deg, #60A5FA 0%, #93C5FD 100%);
+  box-shadow: 0 4px 12px rgba(96, 165, 250, 0.3);
+}
+
+.step-header-text {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+}
+
+.step-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--navy-primary);
+  margin: 0;
+}
+
+.step-description {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0 0 var(--spacing-4) 0;
+  line-height: 1.5;
+  padding-left: 64px;
+  /* Align with content after step number */
+}
+
+.edit-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: var(--bg-secondary);
+  border: none;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.edit-btn:hover {
+  background: var(--navy-primary);
+  color: white;
+}
+
+/* Goal Display */
+.goal-display {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.1), rgba(34, 197, 94, 0.08));
+  padding: var(--spacing-4);
+  border-radius: 12px;
+  margin-left: 64px;
+}
+
+.goal-flag {
+  color: var(--teal-primary);
+  flex-shrink: 0;
+}
+
+.goal-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--navy-primary);
+}
+
+/* Step Input Area */
+.step-input-area {
+  margin-left: 64px;
+}
+
+.step-input {
+  width: 100%;
+  padding: var(--spacing-3) var(--spacing-4);
+  border: 2px solid var(--bg-secondary);
+  border-radius: 12px;
+  font-family: var(--font-family);
+  font-size: 0.95rem;
+  color: var(--text-navy);
+  background: var(--bg-secondary);
+  transition: all 0.2s;
+}
+
+.step-input:focus {
+  outline: none;
+  border-color: var(--teal-primary);
+  background: white;
+  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.1);
+}
+
+.step-input::placeholder {
+  color: var(--text-muted);
+}
+
+.edit-actions {
+  display: flex;
+  gap: var(--spacing-2);
+  margin-top: var(--spacing-3);
+  justify-content: flex-end;
+}
+
+.cancel-btn {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid var(--bg-secondary);
+  border-radius: 8px;
+  font-family: var(--font-family);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-btn:hover {
+  background: var(--bg-secondary);
+}
+
+.save-btn {
+  padding: 8px 20px;
+  background: var(--teal-primary);
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-family);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 70px;
+}
+
+.save-btn:hover:not(:disabled) {
+  background: #0D9488;
+}
+
+.save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Weekly Goals Inputs */
+.weekly-goals-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  margin-left: 64px;
+}
+
+/* How It Works inside Step Card */
+.hiw-quote {
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.12), rgba(139, 92, 246, 0.06));
+  padding: var(--spacing-4);
+  border-radius: 12px;
+  margin: 0 0 var(--spacing-4) 64px;
+  border-left: 4px solid #8B5CF6;
+}
+
+.hiw-quote p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--navy-primary);
+  line-height: 1.5;
+}
+
+.hiw-quote strong {
+  color: #7C3AED;
+}
+
+.hiw-section {
+  margin: 0 0 var(--spacing-4) 64px;
+}
+
+.hiw-section h4 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--navy-primary);
+  margin: 0 0 var(--spacing-2) 0;
+}
+
+.hiw-section p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0 0 var(--spacing-2) 0;
+}
+
+.color-scale {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.color-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.color-item .dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.readiness-gradient {
+  height: 10px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #EF4444 0%, #F97316 25%, #EAB308 50%, #22C55E 75%, #16A34A 100%);
+  position: relative;
+  margin-top: var(--spacing-2);
+}
+
+.readiness-gradient .label-left,
+.readiness-gradient .label-right {
+  position: absolute;
+  top: 14px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.readiness-gradient .label-left {
+  left: 0;
+}
+
+.readiness-gradient .label-right {
+  right: 0;
+}
+
+/* Continue Button */
+.continue-journey-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-3);
+  width: 100%;
+  padding: var(--spacing-5) var(--spacing-6);
+  background: linear-gradient(135deg, #1E3A5F 0%, #2D5A7F 100%);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-family: var(--font-family);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow:
+    0 8px 25px rgba(30, 58, 95, 0.35),
+    0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-top: var(--spacing-4);
+}
+
+.continue-journey-btn:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow:
+    0 12px 35px rgba(30, 58, 95, 0.45),
+    0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.continue-journey-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.steps-hint {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: var(--spacing-3);
+}
+
 /* Setup Card for Weekly Goals */
 .setup-card {
   background: white !important;

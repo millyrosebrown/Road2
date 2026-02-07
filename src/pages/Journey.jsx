@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { ArrowRight, Flag, Navigation, Search, Loader2, Play, CheckCircle2, Lock, Check } from 'lucide-react'
+import { ArrowRight, Flag, Navigation, Search, Loader2, Play, CheckCircle2, Lock, Check, Edit2 } from 'lucide-react'
 import { useAuth } from '../lib/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { goalsService, journeyService } from '../lib/services'
@@ -17,7 +17,7 @@ export default function Journey() {
     const { profile, updateProfile, loading: authLoading, user, isAuthenticated } = useAuth()
     const [destinationInput, setDestinationInput] = useState('')
     const [saving, setSaving] = useState(false)
-    const [showWeeklySetup, setShowWeeklySetup] = useState(false)
+    const [showThreeSteps, setShowThreeSteps] = useState(false) // New 3-step flow
     const [weeklyGoals, setWeeklyGoals] = useState(['', '', ''])
     const [localJourneyStarted, setLocalJourneyStarted] = useState(false)
     const [hasExistingGoals, setHasExistingGoals] = useState(false)
@@ -25,6 +25,8 @@ export default function Journey() {
     const [journeyProgress, setJourneyProgress] = useState(null) // For week completion data
     const [newlyUnlocked, setNewlyUnlocked] = useState(null) // Track which week was just unlocked
     const [onboardingStep, setOnboardingStep] = useState('welcome') // 'welcome' or 'goal'
+    const [editingGoal, setEditingGoal] = useState(false) // For editing ultimate goal in step 1
+    const [editedGoal, setEditedGoal] = useState('') // Temp storage for edited goal
     const navigate = useNavigate()
 
     // Derived states
@@ -105,7 +107,22 @@ export default function Journey() {
     }
 
     const handleStartJourney = () => {
-        setShowWeeklySetup(true)
+        setEditedGoal(profile.ultimateGoal || '')
+        setShowThreeSteps(true)
+    }
+
+    // Handler to save edited ultimate goal
+    const handleSaveEditedGoal = async () => {
+        if (!editedGoal.trim()) return
+        setSaving(true)
+        try {
+            await updateProfile({ ultimateGoal: editedGoal })
+            setEditingGoal(false)
+        } catch (error) {
+            console.error('Error updating goal:', error)
+        } finally {
+            setSaving(false)
+        }
     }
 
     const handleSaveWeeklyGoals = async () => {
@@ -138,7 +155,7 @@ export default function Journey() {
             // 3. Mark journey as started locally
             setHasExistingGoals(true)
             setLocalJourneyStarted(true)
-            setShowWeeklySetup(false)
+            setShowThreeSteps(false)
         } catch (error) {
             console.error('Error during journey setup:', error)
             alert('Failed to save goals. Please try again.')
@@ -281,7 +298,7 @@ export default function Journey() {
             )}
 
             {/* 2. READY TO START STATE - Google Maps style destination */}
-            {hasDestination && !journeyStarted && !showWeeklySetup && (
+            {hasDestination && !journeyStarted && !showThreeSteps && (
                 <div className="journey-ready-container">
                     {/* Destination Pin/Bubble - Google Maps style */}
                     <div className="destination-bubble">
@@ -322,21 +339,91 @@ export default function Journey() {
                 </div>
             )}
 
-            {/* 3. WEEKLY GOALS SETUP OVERLAY */}
-            {showWeeklySetup && (
-                <div className="onboarding-overlay" style={{ zIndex: 3000 }}>
-                    <div className="onboarding-content setup-card">
-                        <h2 className="setup-title">Weekly Focus</h2>
-                        <p className="setup-subtitle">What 3 daily activities would you like to improve upon weekly?</p>
+            {/* 3. THREE STEPS TO SUCCESS OVERLAY */}
+            {showThreeSteps && (
+                <div className="three-steps-overlay">
+                    <div className="three-steps-container">
+                        <h1 className="three-steps-title">Three Steps to Success</h1>
+                        <p className="three-steps-subtitle">Complete these steps to begin your journey</p>
 
-                        <div className="goal-inputs-container">
-                            {weeklyGoals.map((goal, index) => (
-                                <div key={index} className="goal-input-wrapper">
-                                    <span className="goal-number">{index + 1}</span>
+                        {/* STEP 1: Ultimate Goal - Already complete, editable */}
+                        <div className={`step-card ${hasDestination && !editingGoal ? 'complete' : ''}`}>
+                            <div className="step-header">
+                                <div className={`step-number ${hasDestination && !editingGoal ? 'complete' : ''}`}>
+                                    {hasDestination && !editingGoal ? <Check size={20} /> : '1'}
+                                </div>
+                                <div className="step-header-text">
+                                    <h3 className="step-title">Your Ultimate Goal</h3>
+                                    {!editingGoal && (
+                                        <button
+                                            className="edit-btn"
+                                            onClick={() => {
+                                                setEditedGoal(profile.ultimateGoal || '')
+                                                setEditingGoal(true)
+                                            }}
+                                        >
+                                            <Edit2 size={14} /> Edit
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                            <p className="step-description">What is your Road leading 2? This is your main recovery goal.</p>
+
+                            {editingGoal ? (
+                                <div className="step-input-area">
                                     <input
                                         type="text"
-                                        className="setup-goal-input"
-                                        placeholder={`Activity ${index + 1}...`}
+                                        className="step-input"
+                                        placeholder="e.g., Running a 5K, Playing with my kids"
+                                        value={editedGoal}
+                                        onChange={(e) => setEditedGoal(e.target.value)}
+                                        disabled={saving}
+                                        autoFocus
+                                    />
+                                    <div className="edit-actions">
+                                        <button
+                                            className="cancel-btn"
+                                            onClick={() => setEditingGoal(false)}
+                                            disabled={saving}
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            className="save-btn"
+                                            onClick={handleSaveEditedGoal}
+                                            disabled={saving || !editedGoal.trim()}
+                                        >
+                                            {saving ? <Loader2 className="animate-spin" size={16} /> : 'Save'}
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="goal-display">
+                                    <Flag size={18} className="goal-flag" />
+                                    <span className="goal-text">{profile.ultimateGoal}</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* STEP 2: Weekly Goals */}
+                        <div className={`step-card ${weeklyGoals.every(g => g.trim()) ? 'complete' : ''}`}>
+                            <div className="step-header">
+                                <div className={`step-number ${weeklyGoals.every(g => g.trim()) ? 'complete' : ''}`}>
+                                    {weeklyGoals.every(g => g.trim()) ? <Check size={20} /> : '2'}
+                                </div>
+                                <div className="step-header-text">
+                                    <h3 className="step-title">Weekly Focus Activities</h3>
+                                </div>
+                            </div>
+                            <p className="step-description">List 3 daily activities that you currently cannot perform well or that are difficult for you.</p>
+
+                            <div className="weekly-goals-inputs">
+                                {weeklyGoals.map((goal, index) => (
+                                    <input
+                                        key={index}
+                                        type="text"
+                                        className="step-input"
+                                        placeholder={`Activity ${index + 1} (e.g., Walking upstairs)`}
                                         value={goal}
                                         onChange={(e) => {
                                             const newGoals = [...weeklyGoals]
@@ -345,24 +432,71 @@ export default function Journey() {
                                         }}
                                         disabled={saving}
                                     />
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
 
+                        {/* STEP 3: How It Works */}
+                        <div className="step-card info-card">
+                            <div className="step-header">
+                                <div className="step-number info">3</div>
+                                <div className="step-header-text">
+                                    <h3 className="step-title">How It Works</h3>
+                                </div>
+                            </div>
+
+                            <div className="hiw-quote">
+                                <p><strong>Your commitment determines your success.</strong> This app will help you stay on track.</p>
+                            </div>
+
+                            <div className="hiw-section">
+                                <h4>Week Color Scale:</h4>
+                                <p>Each week changes color based on days completed:</p>
+                                <div className="color-scale">
+                                    <div className="color-item"><span className="dot" style={{ background: '#16A34A' }} /> 0 missed = Dark Green</div>
+                                    <div className="color-item"><span className="dot" style={{ background: '#22C55E' }} /> 1 missed = Light Green</div>
+                                    <div className="color-item"><span className="dot" style={{ background: '#BEF264' }} /> 2 missed = Yellow-Green</div>
+                                    <div className="color-item"><span className="dot" style={{ background: '#EAB308' }} /> 3 missed = Yellow</div>
+                                    <div className="color-item"><span className="dot" style={{ background: '#F97316' }} /> 4 missed = Orange</div>
+                                    <div className="color-item"><span className="dot" style={{ background: '#EF4444' }} /> 5+ missed = Red</div>
+                                </div>
+                            </div>
+
+                            <div className="hiw-section">
+                                <h4>Appointment Readiness:</h4>
+                                <p>Shows how prepared you are for your next physio visit.</p>
+                                <div className="readiness-gradient">
+                                    <span className="label-left">Not Ready</span>
+                                    <span className="label-right">Ready</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Continue Button */}
                         <button
-                            className="btn btn-primary btn-full flex-center"
+                            className="continue-journey-btn"
                             onClick={handleSaveWeeklyGoals}
-                            disabled={saving || weeklyGoals.some(g => !g.trim())}
-                            style={{ marginTop: '1rem' }}
+                            disabled={saving || !hasDestination || !weeklyGoals.every(g => g.trim())}
                         >
-                            {saving ? <Loader2 className="animate-spin" size={20} /> : <><CheckCircle2 size={20} /> DONE</>}
+                            {saving ? (
+                                <Loader2 className="animate-spin" size={22} />
+                            ) : (
+                                <>
+                                    <Navigation size={22} />
+                                    <span>CONTINUE</span>
+                                </>
+                            )}
                         </button>
+
+                        {(!hasDestination || !weeklyGoals.every(g => g.trim())) && (
+                            <p className="steps-hint">Complete Steps 1 & 2 to continue</p>
+                        )}
                     </div>
                 </div>
             )}
 
             {/* 4. ACTIVE JOURNEY ROAD MAP */}
-            {journeyStarted && !showWeeklySetup && (
+            {journeyStarted && !showThreeSteps && (
                 <div className="roadmap-scroll-container">
                     {/* Banner Image */}
                     <div className="journey-banner-container">
