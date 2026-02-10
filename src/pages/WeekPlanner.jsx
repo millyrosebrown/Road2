@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Flag, Calendar, Plus, Loader2, Check, X, Trophy, Star } from 'lucide-react'
+import { ArrowLeft, Flag, Calendar, Plus, Loader2, Check, X, Trophy, Star, Unlock } from 'lucide-react'
 import { useAuth } from '../lib/AuthContext'
 import { journeyService, userService, exerciseService } from '../lib/services'
 
@@ -20,6 +20,14 @@ const getFaceFromRating = (rating) => {
     if (rating <= 3.5) return '😐'
     if (rating <= 4.5) return '😊'
     return '🤩'
+}
+
+// Helper: get local date as YYYY-MM-DD (avoids UTC timezone issues)
+const getLocalDateStr = (date = new Date()) => {
+    const y = date.getFullYear()
+    const m = String(date.getMonth() + 1).padStart(2, '0')
+    const d = String(date.getDate()).padStart(2, '0')
+    return `${y}-${m}-${d}`
 }
 
 export default function WeekPlanner() {
@@ -54,6 +62,16 @@ export default function WeekPlanner() {
                 try {
                     const progress = await journeyService.getProgress(user.$id)
                     setJourneyProgress(progress)
+
+                    // Record Day 1 if this is Week 1 and no journeyStartDate exists yet
+                    if (weekNum === 1 && progress && !progress.journeyStartDate) {
+                        const today = getLocalDateStr()
+                        const updated = await journeyService.saveProgress(user.$id, {
+                            ...progress,
+                            journeyStartDate: today
+                        })
+                        setJourneyProgress(updated)
+                    }
                 } catch (error) {
                     console.error('Error fetching journey progress:', error)
                 } finally {
@@ -64,7 +82,7 @@ export default function WeekPlanner() {
             }
         }
         fetchProgress()
-    }, [user, authLoading])
+    }, [user, authLoading, weekNum])
 
     // Load exercises from database when weekDays are ready
     useEffect(() => {
@@ -72,18 +90,32 @@ export default function WeekPlanner() {
             if (!user?.$id || weekNum === undefined) return
 
             try {
-                // Calculate the week date range
-                const today = new Date()
-                const startOfCurrentWeek = new Date(today)
-                startOfCurrentWeek.setDate(today.getDate() - today.getDay() + 1)
-                const weekOffset = (weekNum - 1) * 7
-                const weekStart = new Date(startOfCurrentWeek)
-                weekStart.setDate(weekStart.getDate() + weekOffset)
+                // Calculate the week date range anchored to journeyStartDate
+                const startDateStr = journeyProgress?.journeyStartDate
+                let weekStart
+
+                if (startDateStr) {
+                    const startDate = new Date(startDateStr + 'T00:00:00')
+                    const dayOfWeek = startDate.getDay()
+                    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
+                    const week1Monday = new Date(startDate)
+                    week1Monday.setDate(startDate.getDate() + mondayOffset)
+                    weekStart = new Date(week1Monday)
+                    weekStart.setDate(week1Monday.getDate() + (weekNum - 1) * 7)
+                } else {
+                    const today = new Date()
+                    weekStart = new Date(today)
+                    const dayOfWeek = today.getDay()
+                    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
+                    weekStart.setDate(today.getDate() + mondayOffset)
+                    weekStart.setDate(weekStart.getDate() + (weekNum - 1) * 7)
+                }
+
                 const weekEnd = new Date(weekStart)
                 weekEnd.setDate(weekEnd.getDate() + 6)
 
-                const startDate = weekStart.toISOString().split('T')[0]
-                const endDate = weekEnd.toISOString().split('T')[0]
+                const startDate = getLocalDateStr(weekStart)
+                const endDate = getLocalDateStr(weekEnd)
 
                 const dbExercises = await exerciseService.getWeekExercises(user.$id, startDate, endDate)
 
@@ -107,34 +139,57 @@ export default function WeekPlanner() {
             }
         }
         loadExercises()
-    }, [user, weekNum])
+    }, [user, weekNum, journeyProgress?.journeyStartDate])
 
     // Scroll to top when page loads
     useEffect(() => {
         window.scrollTo(0, 0)
     }, [])
 
-    // Calculate week dates based on journey start
+    // Calculate week dates anchored to journeyStartDate
     const getWeekDates = () => {
-        const today = new Date()
-        const startOfCurrentWeek = new Date(today)
-        startOfCurrentWeek.setDate(today.getDate() - today.getDay() + 1)
+        const startDateStr = journeyProgress?.journeyStartDate
+        let weekStartMonday
 
-        const weekOffset = (weekNum - 1) * 7
-        const weekStart = new Date(startOfCurrentWeek)
-        weekStart.setDate(weekStart.getDate() + weekOffset)
+        if (startDateStr) {
+            // Parse the journey start date
+            const startDate = new Date(startDateStr + 'T00:00:00')
+            // Find the Monday of the week containing the start date
+            const dayOfWeek = startDate.getDay() // 0=Sun, 1=Mon, ...
+            const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
+            const week1Monday = new Date(startDate)
+            week1Monday.setDate(startDate.getDate() + mondayOffset)
+
+            // Offset to the requested week
+            weekStartMonday = new Date(week1Monday)
+            weekStartMonday.setDate(week1Monday.getDate() + (weekNum - 1) * 7)
+        } else {
+            // Fallback: current calendar week
+            const today = new Date()
+            weekStartMonday = new Date(today)
+            const dayOfWeek = today.getDay()
+            const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
+            weekStartMonday.setDate(today.getDate() + mondayOffset)
+            weekStartMonday.setDate(weekStartMonday.getDate() + (weekNum - 1) * 7)
+        }
 
         const days = []
         const dayNames = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
 
         for (let i = 0; i < 7; i++) {
-            const date = new Date(weekStart)
-            date.setDate(weekStart.getDate() + i)
+            const date = new Date(weekStartMonday)
+            date.setDate(weekStartMonday.getDate() + i)
+            const dateKey = getLocalDateStr(date)
+            const isDay1 = dateKey === journeyProgress?.journeyStartDate
+            const isToday = dateKey === getLocalDateStr()
+
             days.push({
                 dayName: dayNames[i],
                 date: date,
                 dateString: date.toLocaleDateString('en-AU', { month: 'short', day: 'numeric' }),
-                dateKey: date.toISOString().split('T')[0]
+                dateKey: dateKey,
+                isDay1: isDay1,
+                isToday: isToday
             })
         }
 
@@ -381,7 +436,11 @@ export default function WeekPlanner() {
                     return (
                         <div key={index} className="day-card">
                             <div className="day-header">
-                                <span className="day-name">{day.dayName}</span>
+                                <div className="day-name-row">
+                                    <span className="day-name">{day.dayName}</span>
+                                    {day.isDay1 && <span className="day1-badge">🏁 Day 1</span>}
+                                    {day.isToday && !day.isDay1 && <span className="today-badge">Today</span>}
+                                </div>
                                 <span className="day-date">{day.dateString}</span>
                             </div>
                             <div className="day-exercises">
@@ -620,6 +679,19 @@ export default function WeekPlanner() {
                             Back to Journey
                         </button>
                     </div>
+                </div>
+            )}
+
+            {/* Dev: Unlock Next Week Button */}
+            {!isWeekComplete && !weekCompleted && (
+                <div className="dev-unlock-container">
+                    <button
+                        className="dev-unlock-btn"
+                        onClick={() => setShowCongratsModal(true)}
+                    >
+                        <Unlock size={16} />
+                        <span>Unlock Next Week (Dev)</span>
+                    </button>
                 </div>
             )}
         </div>

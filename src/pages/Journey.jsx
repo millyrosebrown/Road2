@@ -570,8 +570,21 @@ export default function Journey() {
                                 ];
 
                                 const pos = positions[weekNum - 1];
-                                const isLocked = weekNum > (profile?.currentWeek || 1);
-                                const isActive = weekNum === (profile?.currentWeek || 1);
+                                const isLocked = (() => {
+                                    const manualUnlock = weekNum <= (profile?.currentWeek || 1);
+                                    const startDateStr = journeyProgress?.journeyStartDate;
+                                    if (!startDateStr) return !manualUnlock;
+                                    const startDate = new Date(startDateStr + 'T00:00:00');
+                                    const now = new Date();
+                                    const daysSinceStart = Math.floor((now - startDate) / (1000 * 60 * 60 * 24));
+                                    const timeUnlock = daysSinceStart >= (weekNum - 1) * 7;
+                                    return !(manualUnlock || timeUnlock);
+                                })();
+                                const isActive = !isLocked && (() => {
+                                    // Active = the highest unlocked, non-completed week
+                                    const currentWeek = profile?.currentWeek || 1;
+                                    return weekNum === currentWeek;
+                                })();
                                 const completedWeeks = journeyProgress?.completedWeeks || [];
                                 const isComplete = completedWeeks.includes(weekNum);
 

@@ -366,6 +366,7 @@ export const journeyService = {
                         weeklyGoal2: data.weeklyGoal2 || '',
                         weeklyGoal3: data.weeklyGoal3 || '',
                         weekStats: data.weekStats || '',
+                        journeyStartDate: data.journeyStartDate || existing.journeyStartDate || '',
                         updatedAt: new Date().toISOString(),
                     }
                 );
@@ -383,6 +384,7 @@ export const journeyService = {
                         weeklyGoal2: data.weeklyGoal2 || '',
                         weeklyGoal3: data.weeklyGoal3 || '',
                         weekStats: data.weekStats || '',
+                        journeyStartDate: data.journeyStartDate || '',
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString(),
                     }
