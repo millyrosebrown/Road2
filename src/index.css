@@ -1474,11 +1474,11 @@ p {
 /* Week 1 Instruction Hint Bubble */
 .week1-hint-bubble {
   position: absolute;
-  bottom: calc(100% + 20px);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 50;
-  animation: hintBounce 2s ease-in-out infinite;
+  bottom: 50%;
+  left: calc(100% + 12px);
+  transform: translateY(50%);
+  z-index: 100;
+  animation: hintSlide 2s ease-in-out infinite;
   cursor: pointer;
 }
 
@@ -1510,12 +1510,15 @@ p {
 }
 
 .hint-pointer {
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
   width: 0;
   height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-top: 12px solid var(--teal-primary);
-  margin: 0 auto;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 12px solid var(--teal-primary);
 }
 
 .hint-dismiss {
@@ -1532,15 +1535,15 @@ p {
   font-family: var(--font-family);
 }
 
-@keyframes hintBounce {
+@keyframes hintSlide {
 
   0%,
   100% {
-    transform: translateX(-50%) translateY(0);
+    transform: translateY(50%) translateX(0);
   }
 
   50% {
-    transform: translateX(-50%) translateY(-8px);
+    transform: translateY(50%) translateX(6px);
   }
 }
 
