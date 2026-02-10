@@ -27,6 +27,7 @@ export default function Journey() {
     const [onboardingStep, setOnboardingStep] = useState('welcome') // 'welcome' or 'goal'
     const [editingGoal, setEditingGoal] = useState(false) // For editing ultimate goal in step 1
     const [editedGoal, setEditedGoal] = useState('') // Temp storage for edited goal
+    const [showWeek1Hint, setShowWeek1Hint] = useState(false) // Show instruction bubble for Week 1
     const navigate = useNavigate()
 
     // Derived states
@@ -156,6 +157,7 @@ export default function Journey() {
             setHasExistingGoals(true)
             setLocalJourneyStarted(true)
             setShowThreeSteps(false)
+            setShowWeek1Hint(true) // Show hint after journey starts
         } catch (error) {
             console.error('Error during journey setup:', error)
             alert('Failed to save goals. Please try again.')
@@ -595,8 +597,15 @@ export default function Journey() {
                                         style={{ left: `${pos.x}%`, top: `${pos.y}px` }}
                                     >
                                         <button
-                                            className={`week-btn ${isActive ? 'active' : ''} ${isLocked ? 'locked' : ''} ${isComplete ? 'complete' : ''}`}
-                                            onClick={() => !isLocked && navigate(`/week/${weekNum}`)}
+                                            className={`week-btn ${isActive ? 'active' : ''} ${isLocked ? 'locked' : ''} ${isComplete ? 'complete' : ''} ${weekNum === 1 && showWeek1Hint ? 'pulse-attention' : ''}`}
+                                            onClick={() => {
+                                                if (!isLocked) {
+                                                    if (weekNum === 1 && showWeek1Hint) {
+                                                        setShowWeek1Hint(false)
+                                                    }
+                                                    navigate(`/week/${weekNum}`)
+                                                }
+                                            }}
                                             disabled={isLocked}
                                             style={ringColor ? { boxShadow: `0 0 0 4px ${ringColor}` } : {}}
                                         >
@@ -613,6 +622,18 @@ export default function Journey() {
                                             )}
                                         </button>
                                         <span className="week-label">Week {weekNum}</span>
+
+                                        {/* Week 1 instruction bubble */}
+                                        {weekNum === 1 && showWeek1Hint && (
+                                            <div className="week1-hint-bubble" onClick={() => setShowWeek1Hint(false)}>
+                                                <div className="hint-content">
+                                                    <span className="hint-icon">👆</span>
+                                                    <p>Click <strong>Week 1</strong> to view exercises and begin!</p>
+                                                </div>
+                                                <div className="hint-pointer" />
+                                                <button className="hint-dismiss">Got it</button>
+                                            </div>
+                                        )}
                                     </div>
                                 );
                             })}
